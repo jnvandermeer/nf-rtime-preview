@@ -1,0 +1,280 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>libmushu.amplifier &#8212; Mushu 0.2.beta documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.beta',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Mushu 0.2.beta documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../libmushu.html" accesskey="U">libmushu</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for libmushu.amplifier</h1><div class="highlight"><pre>
+<span></span><span class="c1"># amplifier.py</span>
+<span class="c1"># Copyright (C) 2013  Bastian Venthur</span>
+<span class="c1">#</span>
+<span class="c1"># This program is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the GNU General Public License</span>
+<span class="c1"># as published by the Free Software Foundation; either version 2</span>
+<span class="c1"># of the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># This program is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="c1"># GNU General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU General Public License</span>
+<span class="c1"># along with this program; if not, write to the Free Software</span>
+<span class="c1"># Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module provides the :class:`Amplifier` class, which is the base</span>
+<span class="sd">class of all low level amplifier drivers. If you want to write a driver</span>
+<span class="sd">for a specific amplifier your driver must derive from the</span>
+<span class="sd">:class:`Amplifier` class and implement its methods.</span>
+
+<span class="sd">Users will not use your driver directly but a decorated version of it</span>
+<span class="sd">which provides additional features like writing data to a file and</span>
+<span class="sd">receiving marker via TCP.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Amplifier"><a class="viewcode-back" href="../../api/libmushu.html#libmushu.amplifier.Amplifier">[docs]</a><span class="k">class</span> <span class="nc">Amplifier</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Amplifier base class.</span>
+
+<span class="sd">    The base class is very generic on purpose. Amplifiers from different</span>
+<span class="sd">    vendors vary in so many ways that it is difficult to find a common</span>
+<span class="sd">    set of methods that all support.</span>
+
+<span class="sd">    In the spirit of &quot;encapsulating what varies&quot;, I decided to</span>
+<span class="sd">    encapsulate the configuration. So the main configuration of the</span>
+<span class="sd">    amplifier, like setting the mode (e.g. data, impedance, etc.),</span>
+<span class="sd">    sampling frequency, etc. happens in :meth:`configure` and is very</span>
+<span class="sd">    specific for the amplifier at hand.</span>
+
+<span class="sd">    :meth:`start`, :meth:`stop`, and :meth:`get_data` is very generic</span>
+<span class="sd">    and must be supported by all derived amplifier classes.</span>
+
+<span class="sd">    How an amplifier should be used::</span>
+
+<span class="sd">        amp = Amp()</span>
+
+<span class="sd">        # measure impedance</span>
+<span class="sd">        amp.configure(**config)</span>
+<span class="sd">        amp.start()</span>
+<span class="sd">        while 1:</span>
+<span class="sd">            data = amp.get_data()</span>
+<span class="sd">            if enough:</span>
+<span class="sd">                break</span>
+<span class="sd">        amp.stop()</span>
+
+<span class="sd">        # measure data</span>
+<span class="sd">        amp.configure(**config)</span>
+<span class="sd">        channels = amp.get_channels()</span>
+<span class="sd">        amp.start()</span>
+<span class="sd">        while 1:</span>
+<span class="sd">            data = amp.get_data()</span>
+<span class="sd">            if enough:</span>
+<span class="sd">                break</span>
+<span class="sd">        amp.stop()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">presets</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+<div class="viewcode-block" id="Amplifier.configure"><a class="viewcode-back" href="../../api/libmushu.html#libmushu.amplifier.Amplifier.configure">[docs]</a>    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Configure the amplifier.</span>
+
+<span class="sd">        Use this method to set the mode (i.e. impedance, data, ...),</span>
+<span class="sd">        sampling frequency, filter, etc.</span>
+
+<span class="sd">        This depends strongly on the amplifier.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        kwargs : dict</span>
+<span class="sd">            the configuration of the amplifier</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Amplifier.start"><a class="viewcode-back" href="../../api/libmushu.html#libmushu.amplifier.Amplifier.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Make the amplifier ready for delivering data.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Amplifier.stop"><a class="viewcode-back" href="../../api/libmushu.html#libmushu.amplifier.Amplifier.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stop the amplifier.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Amplifier.get_data"><a class="viewcode-back" href="../../api/libmushu.html#libmushu.amplifier.Amplifier.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get data from the amplifier.</span>
+
+<span class="sd">        This method is called as fast as possible (e.g. hundreds of</span>
+<span class="sd">        times per second) and returns the data and the marker (if</span>
+<span class="sd">        supported).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        data : ndarray</span>
+<span class="sd">            a numpy array (time, channels) of the EEG data</span>
+<span class="sd">        markers : list of (float, str)</span>
+<span class="sd">            a list of markers. Each element is a tuple of timestamp and</span>
+<span class="sd">            string. The timestamp is the time in ms relative to the</span>
+<span class="sd">            onset of the block of data. Note that negative values are</span>
+<span class="sd">            *allowed* as well as values bigger than the length of the</span>
+<span class="sd">            block of data returned. That is to be interpreted as a</span>
+<span class="sd">            marker from the last block and a marker for a future block</span>
+<span class="sd">            respectively.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        Create a very slow amplifier with 1Hz and 3 channels and send</span>
+<span class="sd">        some markers:</span>
+
+<span class="sd">        &gt;&gt;&gt; amp = libmushu.get_amp(&#39;randomamp&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; amp.configure(fs=1, channels=3)</span>
+<span class="sd">        &gt;&gt;&gt; amp.start()</span>
+<span class="sd">        &gt;&gt;&gt; while True:</span>
+<span class="sd">        ...     time.sleep(.5)</span>
+<span class="sd">        ...     data, marker = amp.get_data()</span>
+<span class="sd">        ...     print &#39;---&#39;</span>
+<span class="sd">        ...     print data</span>
+<span class="sd">        ...     print marker</span>
+<span class="sd">        ...</span>
+<span class="sd">        ---</span>
+<span class="sd">        [[590 938  72]]</span>
+<span class="sd">        [[98.75297546386719, &#39;foo&#39;], [553.4558296203613, &#39;bar&#39;]]</span>
+<span class="sd">        ---</span>
+<span class="sd">        [[167 168  40]]</span>
+<span class="sd">        []</span>
+<span class="sd">        ---</span>
+<span class="sd">        [[727 705 934]]</span>
+<span class="sd">        [[16.066789627075195, &#39;baz&#39;]]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Amplifier.get_channels"><a class="viewcode-back" href="../../api/libmushu.html#libmushu.amplifier.Amplifier.get_channels">[docs]</a>    <span class="k">def</span> <span class="nf">get_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the list of channel names.</span>
+
+<span class="sd">        The list has the same order as the data, i.e. the second name in</span>
+<span class="sd">        the list represents the second colum of the data returned by</span>
+<span class="sd">        :meth:`get_data`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        channels : list of strings</span>
+<span class="sd">            the channel names</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Amplifier.get_sampling_frequency"><a class="viewcode-back" href="../../api/libmushu.html#libmushu.amplifier.Amplifier.get_sampling_frequency">[docs]</a>    <span class="k">def</span> <span class="nf">get_sampling_frequency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the sampling frequency.</span>
+
+<span class="sd">        This method returns the sampling frequency which is currently</span>
+<span class="sd">        enabled in the amplifier.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        fs : float</span>
+<span class="sd">            the sampling frequency</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Amplifier.is_available"><a class="viewcode-back" href="../../api/libmushu.html#libmushu.amplifier.Amplifier.is_available">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_available</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Is the amplifier connected to the computer?</span>
+
+<span class="sd">        This method should be overwritten by derived classes and return</span>
+<span class="sd">        True if the amplifier is connected to the computer or False if</span>
+<span class="sd">        not.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        available : boolean</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Mushu 0.2.beta documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../libmushu.html" >libmushu</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2013, Bastian Venthur.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>
