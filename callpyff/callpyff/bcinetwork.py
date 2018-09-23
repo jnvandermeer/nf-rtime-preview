@@ -36,7 +36,7 @@ OWNIP = "10.100.0.2"
 FC_PORT = 12345
 GUI_PORT = 12346
 BUFFER_SIZE = 65535
-TIMEOUT = 2.0        # seconds to wait for reply
+TIMEOUT = 10.0        # seconds to wait for reply
 
 
 
