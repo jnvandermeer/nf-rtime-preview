@@ -1,0 +1,5 @@
+name: rt-cwl-eeg-fmri
+dependencies:
+        - python=3
+        - numpy
+        - matplotlib
