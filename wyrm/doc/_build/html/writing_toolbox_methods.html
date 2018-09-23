@@ -1,0 +1,260 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Writing Toolbox Methods &#8212; Wyrm 1.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Changelog" href="changelog.html" />
+    <link rel="prev" title="Conventions Used in This Toolbox" href="conventions.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="changelog.html" title="Changelog"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="conventions.html" title="Conventions Used in This Toolbox"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Wyrm 1.1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="writing-toolbox-methods">
+<h1>Writing Toolbox Methods<a class="headerlink" href="#writing-toolbox-methods" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="methods-must-not-modify-their-arguments">
+<h2>Methods Must not Modify Their Arguments<a class="headerlink" href="#methods-must-not-modify-their-arguments" title="Permalink to this headline">¶</a></h2>
+<p>The convention for this toolbox is, that toolbox methods <strong>must</strong> not alter
+their arguments. This is important as arguments to methods are passed by
+<em>reference</em> in Python and changing an attribute of a <em>mutable</em> object in a
+method which was passed as an argument, will automatically change the object
+outside of this method too.</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">do_something</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">arg</span><span class="p">[</span><span class="s1">&#39;foo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;foo&#39;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">do_something</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span>
+<span class="go">{&#39;bar&#39;: 2, &#39;foo&#39;: 2}</span>
+</pre></div>
+</div>
+<div class="section" id="using-copy">
+<h3>Using <code class="xref py py-meth docutils literal"><span class="pre">copy()</span></code><a class="headerlink" href="#using-copy" title="Permalink to this headline">¶</a></h3>
+<p>Users rely on the methods to leave their arguments unmodified. To assist you
+with that, the <code class="xref py py-class docutils literal"><span class="pre">Data</span></code> object, provides a
+<code class="xref py py-meth docutils literal"><span class="pre">copy()</span></code> method which returns a deep copy of the object.
+This method also allows to selectively overwrite or create attributes in the new
+copy of the object.</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">subsample</span><span class="p">(</span><span class="n">dat</span><span class="p">):</span>
+<span class="gp">... </span><span class="c1"># some calculations</span>
+<span class="gp">... </span><span class="n">new_data</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">data</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span>
+<span class="gp">... </span><span class="n">dat</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">new_data</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">return</span> <span class="n">dat</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h3>
+<p>To ensure that your new method does indeed not alter its arguments, you should
+write an appropriate unit test. The test should look like this:</p>
+<ol class="arabic simple">
+<li>copy the argument before passing it to the method to test</li>
+<li>call the method to test</li>
+<li>check if the copy of the argument and the argument are still equal</li>
+</ol>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_subsample_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Subsample must not modify argument.&quot;&quot;&quot;</span>
+    <span class="n">cpy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>             <span class="c1"># 1</span>
+    <span class="n">subsample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="p">)</span>               <span class="c1"># 2</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">cpy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="p">)</span>   <span class="c1"># 3</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="methods-must-not-rely-on-a-specific-order-of-the-axes">
+<h2>Methods Must not Rely on a Specific Order of the Axes<a class="headerlink" href="#methods-must-not-rely-on-a-specific-order-of-the-axes" title="Permalink to this headline">¶</a></h2>
+<p>Although there is a convention on how to represent Feature Vectors, Continuous-,
+and Epoched data, your methods must not rely on the specific order of the axes.
+Instead, your method should be written in a way that the position is chooseable
+as a parameter of your method. Furthermore those parameters should have default
+values with the defaults being the values following the convention.</p>
+<p>For example, let&#8217;s assume the new method <code class="docutils literal"><span class="pre">subsample</span></code>, which modifies data on
+the time-axis of the argument. Usually the time-axis is the second last one in
+Continuous- and Epoched data</p>
+<p>We define our method with a default <code class="docutils literal"><span class="pre">timeaxis</span></code> parameter set to <code class="docutils literal"><span class="pre">-2</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">subsample</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">timeaxis</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
+    <span class="c1"># do the subsampling</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>So we can call the method without specifying it when we have conventional data:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">dat</span> <span class="o">=</span> <span class="n">subsample</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or we call it specifying the time-axis on other data which follows not our
+convention but sub sampling yields still a meaningful result:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">foo</span> <span class="o">=</span> <span class="n">subsample</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">timeaxis</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Off course writing your method this way is a bit more complicated, but nut very
+much if you know how to index your arrays without the <code class="docutils literal"><span class="pre">__getitem__</span></code> or <code class="docutils literal"><span class="pre">[]</span></code>
+operator.</p>
+<p>Assume you want to take every second value from the last axis of your data:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>How do you rewrite this in a way that the axis is arbitrary? One option is to
+use <code class="xref py py-func docutils literal"><span class="pre">numpy.take()</span></code> which applies an array of indices on axis:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># create an index array with indices of the elements in `timeaxis`</span>
+<span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">])</span>
+<span class="c1"># take only every second (0, 2, 4, 6, ...)</span>
+<span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span>
+<span class="c1"># apply this index array on the last axis of d</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">timeaxis</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Be careful not to apply boolean indexing Arrays with <code class="xref py py-func docutils literal"><span class="pre">numpy.take()</span></code>, for
+that use <code class="xref py py-func docutils literal"><span class="pre">numpy.compress()</span></code>, which does the same like <cite>take</cite> just with
+boolean arrays.</p>
+<p>Another way to achieve the same is to use <code class="xref py py-func docutils literal"><span class="pre">slice()</span></code> and create tuples for
+indexing dynamically:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">ndims</span><span class="p">]</span>
+<span class="n">idx</span><span class="p">[</span><span class="n">timeaxis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="c1"># idx is now equivalent to [:, ::2]</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This is possible since <code class="docutils literal"><span class="pre">a[:,</span> <span class="pre">::2]</span></code> is the same as
+<code class="docutils literal"><span class="pre">a[slice(None),</span> <span class="pre">slice(None,</span> <span class="pre">None,</span> <span class="pre">2)]</span></code> and the fact that <code class="docutils literal"><span class="pre">a[x,</span> <span class="pre">y]</span></code> is just
+syntactic sugar for <code class="docutils literal"><span class="pre">a[[x,</span> <span class="pre">y]]</span></code>.</p>
+<p>Sometimes it might be necessary to insert a new axis in order to make numpy&#8217;s
+broadcasting work properly. For that use <code class="xref py py-func docutils literal"><span class="pre">numpy.expand_dims()</span></code></p>
+<div class="section" id="id1">
+<h3>Testing<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>To test if your method really works with nonstandard axes, you should write a
+swapaxes-test in the unit test for your method. The test usually looks like
+this:</p>
+<ol class="arabic simple">
+<li>swap axes of your data</li>
+<li>apply your method to the swapped data</li>
+<li>un-swap axes of the result</li>
+<li>test if the result is equal to the result of applying your method to the
+original data</li>
+</ol>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_subsample_swapaxes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;subsample must work with nonstandard timeaxis.&quot;&quot;&quot;</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">swapaxes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>        <span class="c1"># 1</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">subsample</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">timeaxis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 2</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">swapaxes</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>             <span class="c1"># 3</span>
+    <span class="n">dat2</span> <span class="o">=</span> <span class="n">subsample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dat</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">dat2</span><span class="p">)</span>           <span class="c1"># 4</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Writing Toolbox Methods</a><ul>
+<li><a class="reference internal" href="#methods-must-not-modify-their-arguments">Methods Must not Modify Their Arguments</a><ul>
+<li><a class="reference internal" href="#using-copy">Using <code class="docutils literal"><span class="pre">copy()</span></code></a></li>
+<li><a class="reference internal" href="#testing">Testing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#methods-must-not-rely-on-a-specific-order-of-the-axes">Methods Must not Rely on a Specific Order of the Axes</a><ul>
+<li><a class="reference internal" href="#id1">Testing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="conventions.html"
+                        title="previous chapter">Conventions Used in This Toolbox</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="changelog.html"
+                        title="next chapter">Changelog</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="changelog.html" title="Changelog"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="conventions.html" title="Conventions Used in This Toolbox"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Wyrm 1.1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2012 - 2015, Bastian Venthur.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=rt jupyterlab
+Exec=bash -c 'cd /home/nfcontrol/nf/nf-rtime; ./start_jupyerlab.sh;$SHELL'
+Comment=Start RealTime
+Terminal=true
+Type=Application

@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Changelog &#8212; Wyrm 1.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/sidebar.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Writing Toolbox Methods" href="writing_toolbox_methods.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="writing_toolbox_methods.html" title="Writing Toolbox Methods"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Wyrm 1.1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-1-1-0">
+<h2>Version 1.1.0<a class="headerlink" href="#version-1-1-0" title="Permalink to this headline">¶</a></h2>
+<p>This version mainly adds the new <code class="xref py py-func docutils literal"><span class="pre">wyrm.apply_spatial_filter()</span></code> method, for
+applying spatial filtering used in CSP, CCA, whitening, etc. All manual spatial
+filtering has been replaced throughout the toolbox to use the new method
+instead.</p>
+<div class="section" id="new-methods">
+<h3>New Methods<a class="headerlink" href="#new-methods" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>New decorator <code class="xref py py-class docutils literal"><span class="pre">wyrm.misc.deprecated</span></code> that is used internally for
+marking methods as deprecated</li>
+<li>New method <code class="xref py py-func docutils literal"><span class="pre">wyrm.processing.apply_spatial_filter()</span></code> for applying spatial
+filters like CSP, CCA, whitening, etc.</li>
+</ul>
+</div>
+<div class="section" id="deprecated-methods">
+<h3>Deprecated Methods<a class="headerlink" href="#deprecated-methods" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Deprecated method <code class="xref py py-func docutils literal"><span class="pre">wyrm.processing.apply_csp()</span></code>. One should use
+<code class="xref py py-func docutils literal"><span class="pre">wyrm.processing.apply_spatial_filter()</span></code> instead</li>
+</ul>
+</div>
+<div class="section" id="bugfixes">
+<h3>Bugfixes<a class="headerlink" href="#bugfixes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fixed bug in <code class="xref py py-func docutils literal"><span class="pre">wyrm.processing.calculate_whitening_matrix()</span></code>, that
+incorrectly calculated the whitening matrix due to a missing transpose</li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-1-0-0">
+<h2>Version 1.0.0<a class="headerlink" href="#version-1-0-0" title="Permalink to this headline">¶</a></h2>
+<p>We bumped the version up to 1 without backwards-incompatible changes since the
+last version.</p>
+<div class="section" id="id1">
+<h3>New Methods<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>New method <code class="xref py py-meth docutils literal"><span class="pre">wyrm.processing.rereference()</span></code> for rereferencing channels</li>
+<li>New method <code class="xref py py-meth docutils literal"><span class="pre">wyrm.processing.calculate_whitening_matrix()</span></code></li>
+</ul>
+</div>
+<div class="section" id="improvements">
+<h3>Improvements<a class="headerlink" href="#improvements" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><code class="xref py py-meth docutils literal"><span class="pre">wyrm.plot.plot_channels()</span></code> is now able to plot continuous and epoched
+data</li>
+<li><code class="xref py py-meth docutils literal"><span class="pre">wyrm.plot.plot_channels()</span></code> allows for configuring the number of columns
+of the grid</li>
+</ul>
+</div>
+<div class="section" id="misc">
+<h3>Misc<a class="headerlink" href="#misc" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Upgraded to Sphinx 1.3.1</li>
+<li>We use napoleon instead of the numpydoc plugin</li>
+<li>Several fixes for various docstring issues</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Changelog</a><ul>
+<li><a class="reference internal" href="#version-1-1-0">Version 1.1.0</a><ul>
+<li><a class="reference internal" href="#new-methods">New Methods</a></li>
+<li><a class="reference internal" href="#deprecated-methods">Deprecated Methods</a></li>
+<li><a class="reference internal" href="#bugfixes">Bugfixes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#version-1-0-0">Version 1.0.0</a><ul>
+<li><a class="reference internal" href="#id1">New Methods</a></li>
+<li><a class="reference internal" href="#improvements">Improvements</a></li>
+<li><a class="reference internal" href="#misc">Misc</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="writing_toolbox_methods.html"
+                        title="previous chapter">Writing Toolbox Methods</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="writing_toolbox_methods.html" title="Writing Toolbox Methods"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Wyrm 1.1.0 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2012 - 2015, Bastian Venthur.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
+</html>

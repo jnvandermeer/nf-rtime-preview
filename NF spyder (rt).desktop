@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=NF spyder
+Exec=bash -c 'cd /home/nfcontrol/nf/nf-rtime; ./start_spyder.sh;$SHELL'
+Comment=Start Spyder
+Terminal=false
+Type=Application
+Name[en_AU]=NF spyder (rt)
+Icon=/home/nfcontrol/nf/nf-rtime/spyder_logo.png
