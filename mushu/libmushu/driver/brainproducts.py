@@ -221,10 +221,11 @@ class BPAmp(Amplifier):
 
             # self.sock.sendall(b'4')  # superfluously send '4' again.
             # time.sleep(1)
-            self.sock.sendall(b'M')  # so when Monitoring Mode is ON --> RDP'll be active.
-            time.sleep(0.2)
             self.sock.sendall(b'D')
             time.sleep(0.2)
+            self.sock.sendall(b'M')  # so when Monitoring Mode is ON --> RDP'll be active.
+            time.sleep(0.2)
+
             self.sock.sendall(b'S')
 
             logger.debug('Starting Recording.')
@@ -279,7 +280,8 @@ class BPAmp(Amplifier):
 
         # self.sock.sendall(b'X')
         if self.remotecontrol is True:
-            self.sock.close()
+            pass
+            # self.sock.close()
 
         self.STATE = 'STOPPED'
         logger.debug('Stopping the Recording... going back to Monitoring Mode...')
