@@ -1,3 +1,18 @@
+Real-Time Neurofeedback Environment in Python
+=============================================
+There are two parts:
+- rtime, python 3
+- stim, python 2
+
+This is the **rtime** part of the NF tools
+
+TODO: (later) this information
+
+
+
+
+
+
 New Version of Pyff - Use for Neurofeedback
 ===========================================
 
