@@ -95,10 +95,10 @@ venv.bak/
 # mypy
 .mypy_cache/
 # more specific stuff
-Projects
 .ipynb_checkpoints
 *.pyc
 gh_pages
 
 
+Projects/
 .idea/
