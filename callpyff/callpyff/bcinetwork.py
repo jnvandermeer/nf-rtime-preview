@@ -43,6 +43,23 @@ TIMEOUT = 10.0        # seconds to wait for reply
 
 
 
+# my little wrapper for socket class:
+class sock(socket.socket):
+    def __init__(self, *args):
+        super(sock, self).__init__(*args)
+        self.is_bound=False
+        self.is_closed=False
+
+        self._bind = socket.socket.bind
+        self._close = socket.socket.close
+
+    def bind(self,*args):
+        self.is_bound = True
+        self._bind(self,*args)
+    def close(self):
+        self.is_closed = True
+        self._close(self)
+
 
 
 class BciNetwork(object):
@@ -72,13 +89,13 @@ class BciNetwork(object):
         if myport != None:
             
             # do port magic...
-            import netifaces
+            # import netifaces
             #ips=[netifaces.ifaddresses(iface)[netifaces.AF_INET][0]['addr'] for iface in netifaces.interfaces() if netifaces.AF_INET in netifaces.ifaddresses(iface)]
             #ipaddr=[ipaddr for ipaddr in ips if '10.100.0'.lower() in ipaddr.lower()]
             #ipaddr=str(ipaddr[0])
             #print(ipaddr)
             self.SEND_ONLY = False
-            self.srvsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.srvsocket = sock(socket.AF_INET, socket.SOCK_DGRAM)  # using my wrapper.
             #self.srvsocket.bind(('10.100.0.2', myport))
             #self.srvsocket.bind(('192.168.1.90', myport))
             self.srvsocket.bind(('', myport))
@@ -217,28 +234,70 @@ class BciNetwork(object):
         with __new__, and also whenver this object is deleted with __del__, I think.
         This would potentially allow us to reinitiate this class with impunity.
         '''
-        self.srvsocket.close()
+        
+        # print(self.srvsocket.is_closed)
+        # print(self.srvsocket.is_bound)
+        if not self.srvsocket.is_closed:  # and self.srvsocket.is_bound:
+            print('closing...')
+            self.srvsocket.close()
+        else:
+            print('srvsocket was already closed here.')
+        
+    def get_srvsocket_port(self):
+        # check if this port is still open?
+        if not self.srvsocket.is_closed:
+            return self.srvsocket.getsockname()[1]
+        else:
+            return -1
         
         
-    def __new__(self):
+    def __new__(self, ip, port, myport=None, protocol='bcixml'):
         ''' inspect the caller's namespace, and if another bcinetwork is there
             already instantiated, then call close_socket to close it.
             Maybe it'll be called twice, but that's fine.
         '''
-        pvars=inspect.currentframe().f_back.f_locals
+        
+        # print('inside of new!')
+        pvars=inspect.currentframe().f_back.f_locals  # get dict of what's up there
+        
+        to_be_deleted=[]
+        # print(pvars.keys())
         for key in pvars.keys():
-            classname = pvars[key].__class__.__name__
+            classname = pvars[key].__class__.__name__  # this accesses how an instance of  class is named
+
             if classname == 'BciNetwork':
-                print('__new__: I found an instance of BciNetwork!!')
-                print('calling close_srvsocket!')
-                pvars[key].close_srvsocket()
+                
+                # print([key, pvars[key]])
+                
+                # what's the sockets port from this other guy?
+                existing_port = pvars[key].get_srvsocket_port()
+                
+                if myport == existing_port:  # if match -- then close that other port, pls.
+                    print('__new__: I found an instance of BciNetwork!!')
+                    print('and it uses your requested port: %d == %d' % (myport, existing_port))
+                    print('calling close_srvsocket on the previous instance.')
+                    # print(pvars[key])
+                    
+                    # clean it from the namespace!!!
+                    to_be_deleted.append(pvars[key])  # this calls its __del__ method, too.
+                    pvars[key].close_srvsocket()
+
+        for item in to_be_deleted:
+            del(item)
+        # return an instance of the class, though.
+        return super(BciNetwork, self).__new__(self)
+                
                 
     def __del__(self):
-        ''' apparently, using __del__ is evil. But in this case, once this
-            class will be removed, then the socket must be freed. It should
-            NOT exist without this one.
-        '''
-        self.close_srvsocket()
+       ''' apparently, using __del__ is evil. But in this case, once this
+           class will be removed, then the socket must be freed. It should
+           NOT exist without this one.
+       '''
+       
+       # self.close_srvsocket() # .pass
+       # so this will close socket upon removal of the bcinetwork name from the namespace
+       # i.e. we DO want this.
+       # self.close_srvsocket()
         
         
     
