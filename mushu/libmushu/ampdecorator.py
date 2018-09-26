@@ -381,9 +381,9 @@ def marker_reader(queue, running, ready, stoploopev):
     async def check_stop_loop(loop, stoploopev):
         while not stoploopev.is_set():
             await asyncio.sleep(0.00001)
-        loop.stop()
+        print('stopping!')
+        loop.call_soon_threadsafe(loop.stop)
 
-    # add that to the loop, too:
     loop.create_task(check_stop_loop(loop, stoploopev))
     # try that...
 

@@ -198,7 +198,8 @@ class BPAmp(Amplifier):
             In principle, it'd be cleaner to dot this down.
         """
 
-
+        if self.STATE == 'STARTED':
+            raise Exception('You already started the amp!!')
 
         self.STATE = 'STARTED'
 
@@ -275,7 +276,7 @@ class BPAmp(Amplifier):
             self.sock.sendall(b'Q')
             time.sleep(0.2)
         self.datacurator.stop_acquisition()
-        time.sleep(0.2)
+
         self.datacurator.join()
 
         # self.sock.sendall(b'X')

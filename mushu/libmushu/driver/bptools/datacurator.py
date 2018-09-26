@@ -8,12 +8,12 @@ import time
 
 # f1 --> grab stuff from the receiver queue, put it into the container.
 # the container class functions as the buffer. it's basically a numpy array.
-async def put_into_container(container, queue_incoming):
+async def put_into_container(container, queue_incoming, killswitch):
     # make the container handle the queue item. In other words, the Receiver
     # captured some data and put it into the queue. This will use this process's
     # computational resources to make the container handle that new data
     # package.
-    while True:
+    while not killswitch.is_set():
 
         while not queue_incoming.empty():
 
@@ -34,13 +34,13 @@ async def put_into_container(container, queue_incoming):
 
 # f2 --> check if there's a 'get_data' instruction in the queue, and then deal with that.
 # this function will actually become bigger in the future to allow for different commands, too.
-async def get_from_container(container, queue_instructions, queue_data, datasent):
+async def get_from_container(container, queue_instructions, queue_data, datasent, killswitch):
     # check whether there's anything in the queue.
 
     printed_header_warning = False
 
 
-    while True:
+    while not killswitch.is_set():
 
 
         while queue_instructions.qsize() > 0:
@@ -134,10 +134,20 @@ async def get_from_container(container, queue_instructions, queue_data, datasent
     await asyncio.sleep(0.00001)
 
 
-async def check_stop_loop(loop, killswitch):
+async def check_stop_loop(loop, killswitch, receiver):
     while not killswitch.is_set():
         await asyncio.sleep(0.00001)
-    loop.stop()
+
+
+    print('receiver shutdown sent!')
+    receiver.shutdown()
+    await asyncio.sleep(1)
+    receiver.join()
+    await asyncio.sleep(1)
+    print('receiver successfully joined!')
+
+    print('requesting to stop the Queues Loop')
+    loop.call_soon_threadsafe(loop.stop)
 
 
 class DataCurator(multiprocessing.Process):
@@ -191,9 +201,9 @@ class DataCurator(multiprocessing.Process):
         # a toggle for helping out whether we've sent data
 
         loop = asyncio.new_event_loop()
-        loop.create_task(put_into_container(container, queue_incoming))
-        loop.create_task(get_from_container(container, self.queue_instructions, self.queue_data, self.datasent))
-        loop.create_task(check_stop_loop(loop, self.killswitch))
+        loop.create_task(put_into_container(container, queue_incoming, self.killswitch))
+        loop.create_task(get_from_container(container, self.queue_instructions, self.queue_data, self.datasent, self.killswitch))
+        loop.create_task(check_stop_loop(loop, self.killswitch, receiver))
         # loop.create_task(self.get_data())
         print(__name__)
         print('Loop Starting.')
@@ -205,13 +215,14 @@ class DataCurator(multiprocessing.Process):
 
         # once you're here -- I guess the loop as stopped, since normally python jams around here.
         # so once the loop has stopped -- also stop the Receiver (from clogging the incoming queue.
-        receiver.shutdown()
-        print('receiver shutdown sent!')
-        receiver.join()
-        print('receiver successfully joined!')
+
+
+
+
 
     def stop_acquisition(self):
-        print('requesting to stop the acquisition')
+
+        print('requesting to stop the ev loop:')
         self.killswitch.set()
 
     @property
