@@ -8,7 +8,7 @@ class LoopState(threading.Thread):
     
     def run(self):
         while self._state != 'Stop':
-            self._state = easygui.buttonbox('Loop should:','Control', ('Pause','Stop'))
+            self._state = easygui.buttonbox('Loop should:','Control over the NF While Loop', ('Pause','Stop'))
 
     def get_state(self):
         if self._state == 'Stop':
