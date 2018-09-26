@@ -47,9 +47,9 @@ async def get_from_container(container, queue_instructions, queue_data, datasent
 
             while not container.pass_data_initialized or not container.pass_hdr_initialized:
                 if not printed_header_warning:
-                    print('We will wait until the header and a small part of data has been passed on to')
-                    print('container by datacurator. If this takes too long, you should debug.')
-                    print('See the flowchart')
+                    #print('We will wait until the header and a small part of data has been passed on to')
+                    #print('container by datacurator. If this takes too long, you should debug.')
+                    #print('See the flowchart')
                     printed_header_warning = True
                 await asyncio.sleep(0.00001)
 
@@ -77,11 +77,13 @@ async def get_from_container(container, queue_instructions, queue_data, datasent
                     data = container[interval[0]: interval[1], :]
 
                     markers = container.obtain_markers([interval[0], interval[1]])
+
+                    annotations = container.obtain_annotations([interval[0], interval[1]])
                     #print(interval[0])
                     #print(interval[0])
 
                     if data is not None:
-                        queue_data.put((data, markers))
+                        queue_data.put((data, markers, annotations))
                     datasent.set()
 
                 else:
@@ -108,7 +110,9 @@ async def get_from_container(container, queue_instructions, queue_data, datasent
 
                         markers = container.obtain_markers([0, (nblocks * points_in_block)])
 
-                        queue_data.put((data, markers))
+                        annotations = container.obtain_annotations([0, (nblocks * points_in_block)])
+
+                        queue_data.put((data, markers, annotations))
 
                         container.set_block_position(container.get_last_block())
 
@@ -139,14 +143,14 @@ async def check_stop_loop(loop, killswitch, receiver):
         await asyncio.sleep(0.00001)
 
 
-    print('receiver shutdown sent!')
+    # print('receiver shutdown sent!')
     receiver.shutdown()
     await asyncio.sleep(1)
     receiver.join()
     await asyncio.sleep(1)
-    print('receiver successfully joined!')
+    # print('receiver successfully joined!')
 
-    print('requesting to stop the Queues Loop')
+    # print('requesting to stop the Queues Loop')
     loop.call_soon_threadsafe(loop.stop)
 
 
@@ -188,7 +192,7 @@ class DataCurator(multiprocessing.Process):
     def run(self):
 
 	# All code in here runs in the subprocess, with a memory footprint of the rest of the stuff in this class.
-        print('OK .. starting the DataCurator.')
+        # print('OK .. starting the DataCurator.')
         queue_incoming = multiprocessing.Queue()   # this is container's incoming, but receiver's outgoing
 
         receiver = Receiver(queue_incoming, self.ip_address, self.port)
@@ -205,13 +209,13 @@ class DataCurator(multiprocessing.Process):
         loop.create_task(get_from_container(container, self.queue_instructions, self.queue_data, self.datasent, self.killswitch))
         loop.create_task(check_stop_loop(loop, self.killswitch, receiver))
         # loop.create_task(self.get_data())
-        print(__name__)
-        print('Loop Starting.')
+        # print(__name__)
+        # print('Loop Starting.')
         loop.run_forever()
 
 	# since we've arrived here -- we've escaped from the main event loop.
 	# this is in essence a while loop (even though you don't see it here.
-        print('loop stopped!')
+        # print('loop stopped!')
 
         # once you're here -- I guess the loop as stopped, since normally python jams around here.
         # so once the loop has stopped -- also stop the Receiver (from clogging the incoming queue.
@@ -222,7 +226,7 @@ class DataCurator(multiprocessing.Process):
 
     def stop_acquisition(self):
 
-        print('requesting to stop the ev loop:')
+        # print('requesting to stop the ev loop:')
         self.killswitch.set()
 
     @property
@@ -253,9 +257,9 @@ class DataCurator(multiprocessing.Process):
         #print(self.queue_data.qsize())
         #print(self.queue_data.get())
 
-        (data, markers) = self.queue_data.get()
+        (data, markers, annotations) = self.queue_data.get()
 
-        return data, markers
+        return data, markers, annotations
 
     def get_hdr(self):
 
