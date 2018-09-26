@@ -86,7 +86,13 @@ class DataContainer(object):
         # it's an NDarray object in numpy. So we don't get confused. ....
         # this is CRUCIAL - increase allocated memory matrix by factor of 2.
         m = np.empty((maxlength * 2, hdr['channelCount']))
+
+
+
         self.m = m
+        self.a = {'r': np.empty((maxlength * 2, 1), dtype=bool)}  # these are my attonations
+                                                                  # might think of other types of annots as well.
+
         #print(self.m.shape)
 
         self.missedblocks = []
@@ -133,6 +139,8 @@ class DataContainer(object):
 
             # define what happens when we might need to append some zeros
             self.zerodata = np.zeros((self.points, self.hdr['channelCount']))
+            self.zeroannot = np.zeros((self.points, 1), dtype=bool)
+            self.trueannot = np.ones((self.points, 1), dtype=bool)
 
             self.zeromarkers = []
 
@@ -167,7 +175,7 @@ class DataContainer(object):
             # log the missing block, pls?
             # self.m = np.concatenate((self.nandata,self.m))
             # so instead of cocatenation, we will reshuffle our array.
-            self.append(self.zerodata, self.zeromarkers)  # to make confusion --> missedblocks is a list.
+            self.append(self.zerodata, self.zeromarkers, self.zeroannot)  # to make confusion --> missedblocks is a list.
             self.missedblocks.append(self.lastblock)
             # self.lastblock += 1  do NOT do this here --> append will take care of it.
 
@@ -188,7 +196,7 @@ class DataContainer(object):
         # I already moved to convert this to position-within-block + description in bptools.py.
 
         # append data
-        self.append(data, markers)
+        self.append(data, markers, self.trueannot)
 
         self.receivedblocks.append(block)
         # add the matrix here.
@@ -206,7 +214,7 @@ class DataContainer(object):
         # keeping track of events as they roll in -- just prepending them to a list.
         # and cut off the last part of the list when needed
 
-    def append(self, data, markers):
+    def append(self, data, markers, annot):
 
         # print(t)
         # might be a memory leak - use another notation: m[::-1] = should be same
@@ -225,11 +233,14 @@ class DataContainer(object):
         #print(self.m.shape)
 
         self.m[b:e, :] = data[::-1]  # last ones go first
+        self.a['r'][b:e] = annot  # it's all true or all false, so no flipping
 
         # the SAME - at the END through the MIDDLE
         b += self.middle_matrix_pos
         e += self.middle_matrix_pos
         self.m[b:e, :] = data[::-1]
+        self.a['r'][b:e] = annot
+
 
         if self.internal_matrix_pos == 0:
             # this is the crucial part - here we reverse positions in the matrix
@@ -298,11 +309,23 @@ class DataContainer(object):
     def get_samples_in_block(self):
         return self.points
 
+
+    def obtain_annotations(self, interval):
+
+        b = self.internal_matrix_pos + interval[0]
+        e = self.internal_matrix_pos + interval[1]
+
+        to_return = dict()
+        for key in self.a.keys():
+            to_return[key] = self.a[key][b:e]
+
+        return to_return
+
+
     def obtain_markers(self, interval):
 
         b = interval[0]
         e = interval[1]
-
 
 
         # based on b and e ... what are the accompanying blocs?
@@ -419,6 +442,9 @@ class DataContainer(object):
             return self.m.__getitem__(newslice, **kwargs)
         elif isinstance(*args, int):
             return self.m.__getitem__(newval, **kwargs)
+
+
+
 
 
             #
