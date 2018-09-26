@@ -3,6 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="1614ef52-0c03-4ba4-ae6a-b21702a186df" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Projects/1_EFL_metrics/.ipynb_checkpoints/Short Amp Test-checkpoint.ipynb" afterPath="$PROJECT_DIR$/Projects/1_EFL_metrics/.ipynb_checkpoints/Short Amp Test-checkpoint.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Projects/1_EFL_metrics/Short Amp Test.ipynb" afterPath="$PROJECT_DIR$/Projects/1_EFL_metrics/Short Amp Test.ipynb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mushu/libmushu/ampdecorator.py" afterPath="$PROJECT_DIR$/mushu/libmushu/ampdecorator.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mushu/libmushu/driver/bptools/datacurator.py" afterPath="$PROJECT_DIR$/mushu/libmushu/driver/bptools/datacurator.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mushu/libmushu/driver/brainproducts.py" afterPath="$PROJECT_DIR$/mushu/libmushu/driver/brainproducts.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -19,7 +24,7 @@
       <file leaf-file-name="container.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/bptools/container.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="159">
+            <state relative-caret-position="465">
               <caret line="31" column="62" lean-forward="false" selection-start-line="31" selection-start-column="62" selection-end-line="31" selection-end-column="62" />
               <folding>
                 <marker date="1537018237271" expanded="true" signature="1399:1419" ph="..." />
@@ -32,8 +37,8 @@
       <file leaf-file-name="datacurator.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/bptools/datacurator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="324">
-              <caret line="59" column="35" lean-forward="false" selection-start-line="59" selection-start-column="35" selection-end-line="59" selection-end-column="35" />
+            <state relative-caret-position="195">
+              <caret line="145" column="26" lean-forward="true" selection-start-line="145" selection-start-column="26" selection-end-line="145" selection-end-column="26" />
               <folding />
             </state>
           </provider>
@@ -62,8 +67,8 @@
       <file leaf-file-name="bptools.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/bptools/bptools.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="190">
-              <caret line="255" column="0" lean-forward="false" selection-start-line="255" selection-start-column="0" selection-end-line="255" selection-end-column="0" />
+            <state relative-caret-position="-1493">
+              <caret line="183" column="27" lean-forward="false" selection-start-line="183" selection-start-column="23" selection-end-line="183" selection-end-column="27" />
               <folding>
                 <marker date="1537018237271" expanded="true" signature="8720:10350" ph="..." />
               </folding>
@@ -71,24 +76,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="brainproducts.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="brainproducts.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/brainproducts.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="280">
-              <caret line="281" column="38" lean-forward="false" selection-start-line="281" selection-start-column="38" selection-end-line="281" selection-end-column="38" />
+            <state relative-caret-position="2677">
+              <caret line="203" column="30" lean-forward="true" selection-start-line="203" selection-start-column="30" selection-end-line="203" selection-end-column="30" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
-                <marker date="1537688948308" expanded="true" signature="1036:1377" ph="..." />
+                <marker date="1537926192173" expanded="true" signature="1036:1377" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ampdecorator.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ampdecorator.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mushu/libmushu/ampdecorator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="366">
-              <caret line="158" column="51" lean-forward="false" selection-start-line="158" selection-start-column="51" selection-end-line="158" selection-end-column="51" />
+            <state relative-caret-position="127">
+              <caret line="399" column="0" lean-forward="true" selection-start-line="399" selection-start-column="0" selection-end-line="399" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -98,9 +103,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>get_data</find>
-      <find>of time</find>
-      <find>obtain</find>
       <find>received</find>
       <find>obtain_marker</find>
       <find>sock</find>
@@ -128,6 +130,9 @@
       <find>max_reque</find>
       <find>marker_reader</find>
       <find>wait</find>
+      <find>amplifier stopped!</find>
+      <find>awaitas</find>
+      <find>awaita</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$/mushu/libmushu</dir>
@@ -143,9 +148,9 @@
         <option value="$PROJECT_DIR$/callpyff/bcixml.py" />
         <option value="$PROJECT_DIR$/mushu/libmushu/driver/bptools/bptools.py" />
         <option value="$PROJECT_DIR$/mushu/libmushu/driver/bptools/container.py" />
-        <option value="$PROJECT_DIR$/mushu/libmushu/driver/bptools/datacurator.py" />
         <option value="$PROJECT_DIR$/mushu/libmushu/ampdecorator.py" />
         <option value="$PROJECT_DIR$/mushu/libmushu/driver/brainproducts.py" />
+        <option value="$PROJECT_DIR$/mushu/libmushu/driver/bptools/datacurator.py" />
       </list>
     </option>
   </component>
@@ -156,8 +161,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="132" />
-    <option name="y" value="55" />
+    <option name="x" value="81" />
+    <option name="y" value="16" />
     <option name="width" value="1174" />
     <option name="height" value="675" />
   </component>
@@ -197,6 +202,7 @@
     </navigator>
     <panes>
       <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -239,7 +245,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -301,7 +306,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="132" y="55" width="1174" height="675" extended-state="0" />
+    <frame x="81" y="16" width="1174" height="675" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25853243" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -350,7 +355,7 @@
           <caret line="217" column="41" lean-forward="false" selection-start-line="217" selection-start-column="41" selection-end-line="217" selection-end-column="41" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
-            <marker date="1537688948308" expanded="true" signature="1036:1377" ph="..." />
+            <marker date="1537926192173" expanded="true" signature="1036:1377" ph="..." />
           </folding>
         </state>
       </provider>
@@ -414,7 +419,7 @@
           <caret line="257" column="27" lean-forward="true" selection-start-line="257" selection-start-column="27" selection-end-line="257" selection-end-column="27" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
-            <marker date="1537688948308" expanded="true" signature="1036:1377" ph="..." />
+            <marker date="1537926192173" expanded="true" signature="1036:1377" ph="..." />
           </folding>
         </state>
       </provider>
@@ -485,7 +490,7 @@
           <caret line="217" column="41" lean-forward="false" selection-start-line="217" selection-start-column="41" selection-end-line="217" selection-end-column="41" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
-            <marker date="1537688948308" expanded="true" signature="1036:1377" ph="..." />
+            <marker date="1537926192173" expanded="true" signature="1036:1377" ph="..." />
           </folding>
         </state>
       </provider>
@@ -556,7 +561,7 @@
           <caret line="305" column="0" lean-forward="false" selection-start-line="305" selection-start-column="0" selection-end-line="305" selection-end-column="0" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
-            <marker date="1537688948308" expanded="true" signature="1036:1377" ph="..." />
+            <marker date="1537926192173" expanded="true" signature="1036:1377" ph="..." />
           </folding>
         </state>
       </provider>
@@ -596,7 +601,7 @@
           <caret line="141" column="14" lean-forward="false" selection-start-line="141" selection-start-column="14" selection-end-line="141" selection-end-column="14" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
-            <marker date="1537688948308" expanded="true" signature="1036:1377" ph="..." />
+            <marker date="1537926192173" expanded="true" signature="1036:1377" ph="..." />
           </folding>
         </state>
       </provider>
@@ -626,7 +631,7 @@
           <caret line="293" column="49" lean-forward="false" selection-start-line="293" selection-start-column="41" selection-end-line="293" selection-end-column="49" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
-            <marker date="1537688948308" expanded="true" signature="1036:1377" ph="..." />
+            <marker date="1537926192173" expanded="true" signature="1036:1377" ph="..." />
           </folding>
         </state>
       </provider>
@@ -703,19 +708,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/bptools/bptools.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="255" column="0" lean-forward="false" selection-start-line="255" selection-start-column="0" selection-end-line="255" selection-end-column="0" />
-          <folding>
-            <marker date="1537018237271" expanded="true" signature="8720:10350" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/bptools/container.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="159">
+        <state relative-caret-position="465">
           <caret line="31" column="62" lean-forward="false" selection-start-line="31" selection-start-column="62" selection-end-line="31" selection-end-column="62" />
           <folding>
             <marker date="1537018237271" expanded="true" signature="1399:1419" ph="..." />
@@ -724,30 +719,40 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mushu/libmushu/ampdecorator.py">
+    <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/bptools/bptools.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="366">
-          <caret line="158" column="51" lean-forward="false" selection-start-line="158" selection-start-column="51" selection-end-line="158" selection-end-column="51" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/bptools/datacurator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="59" column="35" lean-forward="false" selection-start-line="59" selection-start-column="35" selection-end-line="59" selection-end-column="35" />
-          <folding />
+        <state relative-caret-position="-1493">
+          <caret line="183" column="27" lean-forward="false" selection-start-line="183" selection-start-column="23" selection-end-line="183" selection-end-column="27" />
+          <folding>
+            <marker date="1537018237271" expanded="true" signature="8720:10350" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/brainproducts.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="281" column="38" lean-forward="false" selection-start-line="281" selection-start-column="38" selection-end-line="281" selection-end-column="38" />
+        <state relative-caret-position="2677">
+          <caret line="203" column="30" lean-forward="true" selection-start-line="203" selection-start-column="30" selection-end-line="203" selection-end-column="30" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
-            <marker date="1537688948308" expanded="true" signature="1036:1377" ph="..." />
+            <marker date="1537926192173" expanded="true" signature="1036:1377" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/bptools/datacurator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="145" column="26" lean-forward="true" selection-start-line="145" selection-start-column="26" selection-end-line="145" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mushu/libmushu/ampdecorator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="127">
+          <caret line="399" column="0" lean-forward="true" selection-start-line="399" selection-start-column="0" selection-end-line="399" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
