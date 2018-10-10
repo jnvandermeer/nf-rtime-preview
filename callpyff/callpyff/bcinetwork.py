@@ -217,10 +217,12 @@ class BciNetwork(object):
         with __new__, and also whenver this object is deleted with __del__, I think.
         This would potentially allow us to reinitiate this class with impunity.
         '''
+        
         self.srvsocket.close()
         
         
-    def __new__(self):
+        
+    def __new__(self,  ip, port, myport=None, protocol='bcixml'):
         ''' inspect the caller's namespace, and if another bcinetwork is there
             already instantiated, then call close_socket to close it.
             Maybe it'll be called twice, but that's fine.
@@ -230,14 +232,15 @@ class BciNetwork(object):
             classname = pvars[key].__class__.__name__
             if classname == 'BciNetwork':
                 print('__new__: I found an instance of BciNetwork!!')
-                print('calling close_srvsocket!')
-                pvars[key].close_srvsocket()
+                # print('calling close_srvsocket!')
+                # pvars[key].close_srvsocket()
                 
     def __del__(self):
         ''' apparently, using __del__ is evil. But in this case, once this
             class will be removed, then the socket must be freed. It should
             NOT exist without this one.
         '''
+        print('oh no! -- closing socket.')
         self.close_srvsocket()
         
         
