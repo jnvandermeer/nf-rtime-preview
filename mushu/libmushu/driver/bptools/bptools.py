@@ -151,7 +151,7 @@ class Receiver(multiprocessing.Process):
     # @profile
     def run(self):
 
-        print('running...')
+        # print('running...')
         # Create a tcpip socket
         con = socket(AF_INET, SOCK_STREAM)
         # Connect to recorder host via 32Bit RDA-port
@@ -201,7 +201,7 @@ class Receiver(multiprocessing.Process):
                 # reset block counter
                 lastBlock = -1
 
-                print("Start")
+                # print("Start")
                 print("Number of channels: " + str(channelCount))
                 print("Sampling interval: " + str(samplingInterval))
                 print("Resolutions: " + str(resolutions))
@@ -300,11 +300,13 @@ class Receiver(multiprocessing.Process):
         con.close()
 
         if self.finish is True:
-            print('Terminated by Recorder')
+            pass
+            # print('Terminated by Recorder')
             # self.exit.set()  # we have to do this ourselves to exit the main loop...
 
         if self.exit.is_set():
-            print('Terminated by NF Control')
+            pass
+            # print('Terminated by NF Control')
 
     def shutdown(self):
         self.exit.set()

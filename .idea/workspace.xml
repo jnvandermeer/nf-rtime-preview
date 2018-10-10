@@ -2,10 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="1614ef52-0c03-4ba4-ae6a-b21702a186df" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/nf-rtime.iml" afterPath="$PROJECT_DIR$/.idea/nf-rtime.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Projects/1_EFL_metrics/.ipynb_checkpoints/Short Amp Test-checkpoint.ipynb" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Projects/1_EFL_metrics/Short Amp Test.ipynb" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Projects_Templates/1_BasicNFWorkflow/Short Amp Test.ipynb" afterPath="$PROJECT_DIR$/Projects_Templates/1_BasicNFWorkflow/Short Amp Test.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mushu/libmushu/ampdecorator.py" afterPath="$PROJECT_DIR$/mushu/libmushu/ampdecorator.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mushu/libmushu/driver/bptools/bptools.py" afterPath="$PROJECT_DIR$/mushu/libmushu/driver/bptools/bptools.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mushu/libmushu/driver/bptools/container.py" afterPath="$PROJECT_DIR$/mushu/libmushu/driver/bptools/container.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mushu/libmushu/driver/bptools/datacurator.py" afterPath="$PROJECT_DIR$/mushu/libmushu/driver/bptools/datacurator.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mushu/libmushu/driver/brainproducts.py" afterPath="$PROJECT_DIR$/mushu/libmushu/driver/brainproducts.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -22,11 +26,11 @@
       <file leaf-file-name="container.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/bptools/container.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="159">
-              <caret line="31" column="62" lean-forward="true" selection-start-line="31" selection-start-column="62" selection-end-line="31" selection-end-column="62" />
+            <state relative-caret-position="262">
+              <caret line="322" column="0" lean-forward="true" selection-start-line="322" selection-start-column="0" selection-end-line="322" selection-end-column="0" />
               <folding>
-                <marker date="1537018237271" expanded="true" signature="1399:1419" ph="..." />
-                <marker date="1537018237271" expanded="true" signature="8661:10567" ph="..." />
+                <marker date="1537932309186" expanded="true" signature="1399:1419" ph="..." />
+                <marker date="1537932309186" expanded="true" signature="9046:11065" ph="..." />
               </folding>
             </state>
           </provider>
@@ -35,8 +39,8 @@
       <file leaf-file-name="datacurator.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/bptools/datacurator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="324">
-              <caret line="59" column="35" lean-forward="true" selection-start-line="59" selection-start-column="35" selection-end-line="59" selection-end-column="35" />
+            <state relative-caret-position="195">
+              <caret line="194" column="28" lean-forward="false" selection-start-line="194" selection-start-column="28" selection-end-line="194" selection-end-column="28" />
               <folding />
             </state>
           </provider>
@@ -62,13 +66,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="bptools.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="bptools.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/bptools/bptools.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="190">
-              <caret line="255" column="0" lean-forward="false" selection-start-line="255" selection-start-column="0" selection-end-line="255" selection-end-column="0" />
+            <state relative-caret-position="427">
+              <caret line="313" column="0" lean-forward="true" selection-start-line="313" selection-start-column="0" selection-end-line="313" selection-end-column="0" />
               <folding>
-                <marker date="1537018237271" expanded="true" signature="8720:10350" ph="..." />
+                <marker date="1537934881916" expanded="true" signature="8724:10354" ph="..." />
               </folding>
             </state>
           </provider>
@@ -77,21 +81,21 @@
       <file leaf-file-name="brainproducts.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/brainproducts.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3285">
-              <caret line="233" column="41" lean-forward="false" selection-start-line="233" selection-start-column="41" selection-end-line="233" selection-end-column="41" />
+            <state relative-caret-position="257">
+              <caret line="188" column="0" lean-forward="true" selection-start-line="188" selection-start-column="0" selection-end-line="188" selection-end-column="0" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
-                <marker date="1537018237281" expanded="true" signature="1036:1377" ph="..." />
+                <marker date="1537934846099" expanded="true" signature="1036:1377" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ampdecorator.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ampdecorator.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mushu/libmushu/ampdecorator.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="385" column="32" lean-forward="true" selection-start-line="385" selection-start-column="32" selection-end-line="385" selection-end-column="32" />
+            <state relative-caret-position="195">
+              <caret line="195" column="81" lean-forward="false" selection-start-line="195" selection-start-column="81" selection-end-line="195" selection-end-column="81" />
               <folding />
             </state>
           </provider>
@@ -101,28 +105,7 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>get_data</find>
-      <find>of time</find>
-      <find>obtain</find>
-      <find>received</find>
-      <find>obtain_marker</find>
-      <find>sock</find>
-      <find>received_samples</find>
-      <find>datacura</find>
-      <find>DataCurator</find>
-      <find>datacurator</find>
-      <find>Receiver</find>
-      <find>print block</find>
-      <find>block</find>
-      <find>print blo</find>
-      <find>zerodata</find>
-      <find>stopping...</find>
-      <find>self.points</find>
-      <find>internal_matrix_posinternal_</find>
-      <find>internal_matrix_pos</find>
-      <find>header_is_handled</find>
       <find>channels</find>
-      <find>print</find>
       <find>numbered_</find>
       <find>stopping amp</find>
       <find>self.m</find>
@@ -131,6 +114,27 @@
       <find>max_reque</find>
       <find>marker_reader</find>
       <find>wait</find>
+      <find>awaitas</find>
+      <find>awaita</find>
+      <find>data, marker</find>
+      <find>container</find>
+      <find>OK S</find>
+      <find>print</find>
+      <find>Started the rec</find>
+      <find>We will wait</find>
+      <find>running---</find>
+      <find>receiver shut</find>
+      <find>receiver shot</find>
+      <find>stopping!</find>
+      <find>requestin</find>
+      <find>amplifier</find>
+      <find>amplifier stopped!</find>
+      <find>loop is stopp</find>
+      <find>loop is stoo</find>
+      <find>loop is sto</find>
+      <find>loop is st</find>
+      <find>STARTED</find>
+      <find>terminated b</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$/mushu/libmushu</dir>
@@ -144,11 +148,11 @@
       <list>
         <option value="$PROJECT_DIR$/callpyff/bcinetwork.py" />
         <option value="$PROJECT_DIR$/callpyff/bcixml.py" />
-        <option value="$PROJECT_DIR$/mushu/libmushu/driver/bptools/bptools.py" />
-        <option value="$PROJECT_DIR$/mushu/libmushu/driver/brainproducts.py" />
         <option value="$PROJECT_DIR$/mushu/libmushu/driver/bptools/container.py" />
-        <option value="$PROJECT_DIR$/mushu/libmushu/driver/bptools/datacurator.py" />
         <option value="$PROJECT_DIR$/mushu/libmushu/ampdecorator.py" />
+        <option value="$PROJECT_DIR$/mushu/libmushu/driver/bptools/datacurator.py" />
+        <option value="$PROJECT_DIR$/mushu/libmushu/driver/brainproducts.py" />
+        <option value="$PROJECT_DIR$/mushu/libmushu/driver/bptools/bptools.py" />
       </list>
     </option>
   </component>
@@ -159,8 +163,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1485" />
-    <option name="y" value="54" />
+    <option name="x" value="78" />
+    <option name="y" value="41" />
     <option name="width" value="1174" />
     <option name="height" value="675" />
   </component>
@@ -200,6 +204,7 @@
     </navigator>
     <panes>
       <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -242,7 +247,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -304,7 +308,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1485" y="54" width="1174" height="675" extended-state="0" />
+    <frame x="78" y="41" width="1174" height="675" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25853243" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -353,7 +357,7 @@
           <caret line="217" column="41" lean-forward="false" selection-start-line="217" selection-start-column="41" selection-end-line="217" selection-end-column="41" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
-            <marker date="1537018237281" expanded="true" signature="1036:1377" ph="..." />
+            <marker date="1537934846099" expanded="true" signature="1036:1377" ph="..." />
           </folding>
         </state>
       </provider>
@@ -371,8 +375,8 @@
         <state relative-caret-position="3945">
           <caret line="263" column="46" lean-forward="false" selection-start-line="263" selection-start-column="46" selection-end-line="263" selection-end-column="46" />
           <folding>
-            <marker date="1537018237271" expanded="true" signature="1399:1419" ph="..." />
-            <marker date="1537018237271" expanded="true" signature="8661:10567" ph="..." />
+            <marker date="1537932309186" expanded="true" signature="1399:1419" ph="..." />
+            <marker date="1537932309186" expanded="true" signature="9046:11065" ph="..." />
           </folding>
         </state>
       </provider>
@@ -398,7 +402,7 @@
         <state relative-caret-position="4140">
           <caret line="283" column="17" lean-forward="true" selection-start-line="283" selection-start-column="17" selection-end-line="283" selection-end-column="17" />
           <folding>
-            <marker date="1537018237271" expanded="true" signature="8720:10350" ph="..." />
+            <marker date="1537934881916" expanded="true" signature="8724:10354" ph="..." />
           </folding>
         </state>
       </provider>
@@ -417,7 +421,7 @@
           <caret line="257" column="27" lean-forward="true" selection-start-line="257" selection-start-column="27" selection-end-line="257" selection-end-column="27" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
-            <marker date="1537018237281" expanded="true" signature="1036:1377" ph="..." />
+            <marker date="1537934846099" expanded="true" signature="1036:1377" ph="..." />
           </folding>
         </state>
       </provider>
@@ -442,8 +446,8 @@
         <state relative-caret-position="4920">
           <caret line="328" column="15" lean-forward="false" selection-start-line="328" selection-start-column="10" selection-end-line="328" selection-end-column="15" />
           <folding>
-            <marker date="1537018237271" expanded="true" signature="1399:1419" ph="..." />
-            <marker date="1537018237271" expanded="true" signature="8661:10567" ph="..." />
+            <marker date="1537932309186" expanded="true" signature="1399:1419" ph="..." />
+            <marker date="1537932309186" expanded="true" signature="9046:11065" ph="..." />
           </folding>
         </state>
       </provider>
@@ -477,7 +481,7 @@
         <state relative-caret-position="3675">
           <caret line="252" column="0" lean-forward="false" selection-start-line="252" selection-start-column="0" selection-end-line="252" selection-end-column="0" />
           <folding>
-            <marker date="1537018237271" expanded="true" signature="8720:10350" ph="..." />
+            <marker date="1537934881916" expanded="true" signature="8724:10354" ph="..." />
           </folding>
         </state>
       </provider>
@@ -488,7 +492,7 @@
           <caret line="217" column="41" lean-forward="false" selection-start-line="217" selection-start-column="41" selection-end-line="217" selection-end-column="41" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
-            <marker date="1537018237281" expanded="true" signature="1036:1377" ph="..." />
+            <marker date="1537934846099" expanded="true" signature="1036:1377" ph="..." />
           </folding>
         </state>
       </provider>
@@ -506,8 +510,8 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1537018237271" expanded="true" signature="1399:1419" ph="..." />
-            <marker date="1537018237271" expanded="true" signature="8661:10567" ph="..." />
+            <marker date="1537932309186" expanded="true" signature="1399:1419" ph="..." />
+            <marker date="1537932309186" expanded="true" signature="9046:11065" ph="..." />
           </folding>
         </state>
       </provider>
@@ -548,7 +552,7 @@
         <state relative-caret-position="3810">
           <caret line="261" column="35" lean-forward="true" selection-start-line="261" selection-start-column="35" selection-end-line="261" selection-end-column="35" />
           <folding>
-            <marker date="1537018237271" expanded="true" signature="8720:10350" ph="..." />
+            <marker date="1537934881916" expanded="true" signature="8724:10354" ph="..." />
           </folding>
         </state>
       </provider>
@@ -559,7 +563,7 @@
           <caret line="305" column="0" lean-forward="false" selection-start-line="305" selection-start-column="0" selection-end-line="305" selection-end-column="0" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
-            <marker date="1537018237281" expanded="true" signature="1036:1377" ph="..." />
+            <marker date="1537934846099" expanded="true" signature="1036:1377" ph="..." />
           </folding>
         </state>
       </provider>
@@ -577,8 +581,8 @@
         <state relative-caret-position="1830">
           <caret line="122" column="0" lean-forward="false" selection-start-line="122" selection-start-column="0" selection-end-line="122" selection-end-column="0" />
           <folding>
-            <marker date="1537018237271" expanded="true" signature="1399:1419" ph="..." />
-            <marker date="1537018237271" expanded="true" signature="8661:10567" ph="..." />
+            <marker date="1537932309186" expanded="true" signature="1399:1419" ph="..." />
+            <marker date="1537932309186" expanded="true" signature="9046:11065" ph="..." />
           </folding>
         </state>
       </provider>
@@ -588,7 +592,7 @@
         <state relative-caret-position="3795">
           <caret line="260" column="45" lean-forward="false" selection-start-line="260" selection-start-column="45" selection-end-line="260" selection-end-column="45" />
           <folding>
-            <marker date="1537018237271" expanded="true" signature="8720:10350" ph="..." />
+            <marker date="1537934881916" expanded="true" signature="8724:10354" ph="..." />
           </folding>
         </state>
       </provider>
@@ -599,7 +603,7 @@
           <caret line="141" column="14" lean-forward="false" selection-start-line="141" selection-start-column="14" selection-end-line="141" selection-end-column="14" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
-            <marker date="1537018237281" expanded="true" signature="1036:1377" ph="..." />
+            <marker date="1537934846099" expanded="true" signature="1036:1377" ph="..." />
           </folding>
         </state>
       </provider>
@@ -617,8 +621,8 @@
         <state relative-caret-position="1740">
           <caret line="116" column="39" lean-forward="false" selection-start-line="116" selection-start-column="39" selection-end-line="116" selection-end-column="39" />
           <folding>
-            <marker date="1537018237271" expanded="true" signature="1399:1419" ph="..." />
-            <marker date="1537018237271" expanded="true" signature="8661:10567" ph="..." />
+            <marker date="1537932309186" expanded="true" signature="1399:1419" ph="..." />
+            <marker date="1537932309186" expanded="true" signature="9046:11065" ph="..." />
           </folding>
         </state>
       </provider>
@@ -629,7 +633,7 @@
           <caret line="293" column="49" lean-forward="false" selection-start-line="293" selection-start-column="41" selection-end-line="293" selection-end-column="49" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
-            <marker date="1537018237281" expanded="true" signature="1036:1377" ph="..." />
+            <marker date="1537934846099" expanded="true" signature="1036:1377" ph="..." />
           </folding>
         </state>
       </provider>
@@ -639,7 +643,7 @@
         <state relative-caret-position="3615">
           <caret line="248" column="0" lean-forward="true" selection-start-line="248" selection-start-column="0" selection-end-line="248" selection-end-column="0" />
           <folding>
-            <marker date="1537018237271" expanded="true" signature="8720:10350" ph="..." />
+            <marker date="1537934881916" expanded="true" signature="8724:10354" ph="..." />
           </folding>
         </state>
       </provider>
@@ -706,51 +710,51 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/brainproducts.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3285">
-          <caret line="233" column="41" lean-forward="false" selection-start-line="233" selection-start-column="41" selection-end-line="233" selection-end-column="41" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-            <marker date="1537018237281" expanded="true" signature="1036:1377" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/bptools/bptools.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="255" column="0" lean-forward="false" selection-start-line="255" selection-start-column="0" selection-end-line="255" selection-end-column="0" />
-          <folding>
-            <marker date="1537018237271" expanded="true" signature="8720:10350" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/bptools/datacurator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="59" column="35" lean-forward="true" selection-start-line="59" selection-start-column="35" selection-end-line="59" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/bptools/container.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="159">
-          <caret line="31" column="62" lean-forward="true" selection-start-line="31" selection-start-column="62" selection-end-line="31" selection-end-column="62" />
+        <state relative-caret-position="262">
+          <caret line="322" column="0" lean-forward="true" selection-start-line="322" selection-start-column="0" selection-end-line="322" selection-end-column="0" />
           <folding>
-            <marker date="1537018237271" expanded="true" signature="1399:1419" ph="..." />
-            <marker date="1537018237271" expanded="true" signature="8661:10567" ph="..." />
+            <marker date="1537932309186" expanded="true" signature="1399:1419" ph="..." />
+            <marker date="1537932309186" expanded="true" signature="9046:11065" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/mushu/libmushu/ampdecorator.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="385" column="32" lean-forward="true" selection-start-line="385" selection-start-column="32" selection-end-line="385" selection-end-column="32" />
+        <state relative-caret-position="195">
+          <caret line="195" column="81" lean-forward="false" selection-start-line="195" selection-start-column="81" selection-end-line="195" selection-end-column="81" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/bptools/datacurator.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="194" column="28" lean-forward="false" selection-start-line="194" selection-start-column="28" selection-end-line="194" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/brainproducts.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="257">
+          <caret line="188" column="0" lean-forward="true" selection-start-line="188" selection-start-column="0" selection-end-line="188" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+            <marker date="1537934846099" expanded="true" signature="1036:1377" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mushu/libmushu/driver/bptools/bptools.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="427">
+          <caret line="313" column="0" lean-forward="true" selection-start-line="313" selection-start-column="0" selection-end-line="313" selection-end-column="0" />
+          <folding>
+            <marker date="1537934881916" expanded="true" signature="8724:10354" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>

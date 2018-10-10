@@ -198,14 +198,15 @@ class BPAmp(Amplifier):
             In principle, it'd be cleaner to dot this down.
         """
 
-
+        if self.STATE == 'STARTED':
+            raise Exception('You already started the amp!!')
 
         self.STATE = 'STARTED'
 
         # if not control --> then, we just start the datacurator.
         # NOW -- set up the keeping track up/updating/request handler process.
-        print(self.STATE)
-        print(self.backgroundbuffsize)
+        # print(self.STATE)
+        # print(self.backgroundbuffsize)
         self.datacurator = DataCurator(self.recorderip, self.recorderport, self.backgroundbuffsize)
 
 
@@ -230,7 +231,7 @@ class BPAmp(Amplifier):
 
             logger.debug('Starting Recording.')
 
-            print('started the Recording!')
+            # print('started the Recording!')
 
             # so we CAN start the recording AFTER Monitoring has been initiated.
             # I guess we can close connection, too, right?
@@ -271,11 +272,15 @@ class BPAmp(Amplifier):
         """This has nothing to do with LSL
         """
 
+        if self.STATE == 'STOPPED':
+            raise Exception('Amplifier was already stopped!')
+
+
         if self.remotecontrol is True:
             self.sock.sendall(b'Q')
             time.sleep(0.2)
         self.datacurator.stop_acquisition()
-        time.sleep(0.2)
+
         self.datacurator.join()
 
         # self.sock.sendall(b'X')
@@ -322,17 +327,19 @@ class BPAmp(Amplifier):
         # 1) In order to get some data, put a 'get_data' in the instruction queue.
         # 2) then wait to receive back the data (should be only 1 item)
         # 3) then return this data (and/or markers).
-        data, markers = self.datacurator.get_data()
+        data, markers, annotations = self.datacurator.get_data()
 
         dataf=data[::-1]  # inverse data
         markersf=[(round((len(data) - m[0] * self.fs))/float(self.fs), m[1]) for m in markers]  # inverse markers
 
+        annotationsf=dict()
+        for key in annotations.keys():
+            annotationsf[key] = annotations[key][::-1]
 
         # print(1)
         # fix our special situation that the data and the markers are soonest arrive earliest:
 
-
-        return dataf, markersf
+        return dataf, markersf, annotationsf
 
 
 

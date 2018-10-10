@@ -100,5 +100,5 @@ venv.bak/
 gh_pages
 
 
-Projects/
+# Projects/
 .idea/

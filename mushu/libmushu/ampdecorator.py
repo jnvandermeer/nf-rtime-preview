@@ -230,7 +230,14 @@ class AmpDecorator(Amplifier):
 
         """
         # get data and marker from underlying amp
-        data, marker = self.amp.get_data()
+        ampout = self.amp.get_data()
+
+        if len(ampout) == 2:
+            data, marker = ampout
+            annotations = None
+        elif len(ampout) == 3:
+            data, marker, annotations = ampout
+
 
 
         t = time.time()
@@ -272,7 +279,11 @@ class AmpDecorator(Amplifier):
         # print(self.received_samples)
         if len(data) == 0 and len(marker) > 0:
             logger.error('Received marker but no data. This is an error, the amp should block on get_data until data is available. Marker timestamps will be unreliable.')
-        return data, marker
+
+        if len(ampout) == 2:
+            return data, marker
+        elif len(ampout) == 3:
+            return data, marker, annotations
 
     def get_channels(self):
         return self.amp.get_channels()
@@ -297,6 +308,7 @@ def handle_data(queue, data):
 def marker_reader(queue, running, ready, stoploopev):
     # define our UDP class , which includes what to actually DO with the data:
     # this also kind-of uses the async/await stuff!
+
 
     # so if I wanna pass stuff on to a queue, I'd have to give the queue as an input argument, so we can put stuff on it, right?
     # put the queue in dunder init
@@ -358,14 +370,16 @@ def marker_reader(queue, running, ready, stoploopev):
     # add stuff to the loop. First the UDP:
     # One protocol instance will be created to serve all client requests
     # transport is a coroutine?
-    print("Starting UDP server")
+    #if verbose:
+    #    print("Starting UDP server")
     listen = loop.create_datagram_endpoint(
         lambda: EchoServerProtocol(queue), local_addr=('127.0.0.1', PORT))
     transport, protocol = loop.run_until_complete(listen)
 
     # then the TCP: -- why one is called a coro, and another is called 'listen', I do not know.
     # I also wish to check whether
-    print("Starting TCP server")
+    #if verbose:
+    #    print("Starting TCP server")
     # the docs of asyncio are abhorrent. According to docs, this returns a server object.
     # but a server object is apparently also a coroutine?
     coro = loop.create_server(lambda: EchoServerClientProtocol(queue), '127.0.0.1', PORT)
@@ -381,16 +395,16 @@ def marker_reader(queue, running, ready, stoploopev):
     async def check_stop_loop(loop, stoploopev):
         while not stoploopev.is_set():
             await asyncio.sleep(0.00001)
-        loop.stop()
+        # print('stopping!')
+        loop.call_soon_threadsafe(loop.stop)
 
-    # add that to the loop, too:
     loop.create_task(check_stop_loop(loop, stoploopev))
     # try that...
 
     # say that we're ready.
     ready.set()
 
-    print("starting...")
+    # print("starting...")
 
     try:
         loop.run_forever()
@@ -399,7 +413,7 @@ def marker_reader(queue, running, ready, stoploopev):
 
 
 
-    print("stopping ampdecorator, I")
+    # print("stopping ampdecorator, I")
 
     # closing statements -- do we need those?:
     # close the transport:
@@ -409,11 +423,11 @@ def marker_reader(queue, running, ready, stoploopev):
     # Close the server
     # TCP:
     server.close()
-    print("stopping ampdecorator, II")
+    # print("stopping ampdecorator, II")
     loop.run_until_complete(server.wait_closed())
 
-    print("stopping ampdecorator, III")
+    # print("stopping ampdecorator, III")
     # close the loop, plz?
     loop.close()
 
-    print("stopping ampdecorator, IV")
+    # print("stopping ampdecorator, IV")
