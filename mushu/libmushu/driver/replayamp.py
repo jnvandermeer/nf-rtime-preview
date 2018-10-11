@@ -78,6 +78,9 @@ class ReplayAmp(Amplifier):
 
         samples = round(samples)
         elapsed = samples / self.fs
+
+        # print(elapsed)
+
         self.last_sample_time += elapsed
         # data
         # print(self.pos)
@@ -94,10 +97,19 @@ class ReplayAmp(Amplifier):
         # fast numpy version
         mask = self.marker_ts < (elapsed * 1000)
 
+        # print(elapsed)
+        # print(self.marker_ts)
+
         #print(mask)
         #print(self.marker_ts[mask])
         #print(self.marker_s[mask])
-        markers = zip(self.marker_ts[mask], self.marker_s[mask])
+        
+        # fix inconsistency here:
+        
+        # markers = zip(self.marker_ts[mask], self.marker_s[mask])
+        
+        markers = zip([x / 1000. for x in self.marker_ts[mask]], self.marker_s[mask])
+        
         markers=list(markers)  # python 3 -- zip = lazy iterator, convert to list, see:
         # https://medium.com/@happymishra66/zip-in-python-48cb4f70d013
 

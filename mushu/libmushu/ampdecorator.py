@@ -299,7 +299,6 @@ def handle_data(queue, data):
     queue.put([timestamp, markertext])
     print("%d" % queue.qsize())
 
-    # then print it out... hehe
     item=queue.get()
     queue.put(item)
     print(item)
