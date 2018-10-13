@@ -97,6 +97,8 @@ venv.bak/
 # more specific stuff
 .ipynb_checkpoints
 .pyc
+.pkl
+*.pkl
 gh_pages
 
 
