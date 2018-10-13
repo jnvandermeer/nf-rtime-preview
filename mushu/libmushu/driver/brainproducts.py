@@ -330,7 +330,7 @@ class BPAmp(Amplifier):
         data, markers, annotations = self.datacurator.get_data()
 
         dataf=data[::-1]  # inverse data
-        markersf=[(round((len(data) - m[0] * self.fs))/float(self.fs), m[1]) for m in markers]  # inverse markers
+        markersf=[(round((len(data) - m[0] * self.fs))/float(self.fs) * 1000., m[1]) for m in markers]  # inverse markers -- multiply by 1000 to convert to msec
 
         annotationsf=dict()
         for key in annotations.keys():

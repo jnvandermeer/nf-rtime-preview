@@ -254,7 +254,7 @@ class AmpDecorator(Amplifier):
         while len(marker) > 0:
             # but we can just multiply with 1000, to fix things.
             tmarker=marker.pop(0)
-            lpt_marker.append((tmarker[0]*1000, tmarker[1]))
+            lpt_marker.append((tmarker[0], tmarker[1]))  # this is just BP!
             #print('duration', duration)
             # print(tmarker[0])
             # print(duration)
@@ -299,7 +299,6 @@ def handle_data(queue, data):
     queue.put([timestamp, markertext])
     print("%d" % queue.qsize())
 
-    # then print it out... hehe
     item=queue.get()
     queue.put(item)
     print(item)

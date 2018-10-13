@@ -96,7 +96,9 @@ venv.bak/
 .mypy_cache/
 # more specific stuff
 .ipynb_checkpoints
-*.pyc
+.pyc
+.pkl
+*.pkl
 gh_pages
 
 
