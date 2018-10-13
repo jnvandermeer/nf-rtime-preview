@@ -106,9 +106,9 @@ class ReplayAmp(Amplifier):
         
         # fix inconsistency here:
         
-        # markers = zip(self.marker_ts[mask], self.marker_s[mask])
+        markers = zip(self.marker_ts[mask], self.marker_s[mask])
         
-        markers = zip([x / 1000. for x in self.marker_ts[mask]], self.marker_s[mask])
+        # markers = zip([x for x in self.marker_ts[mask]], self.marker_s[mask])
         
         markers=list(markers)  # python 3 -- zip = lazy iterator, convert to list, see:
         # https://medium.com/@happymishra66/zip-in-python-48cb4f70d013
