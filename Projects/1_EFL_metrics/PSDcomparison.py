@@ -13,15 +13,23 @@ def plot_psd_pb(filename, metafile, markerfile, *args, **kwargs):
                                 replay, n_fft=256, montage='biosemi64',
                                 resample_freq=1000)
     
-    NOTE: At present, this only works for comparing eyes open and eyes closed with the marker codes
+    NOTE: At present, this only works for comparing eyes open and eyes closed with the marker codes 201, 202, 203 and 204
     from the EEG acquisition using the EEG-fMRI Localiser.
+    Additionally, function can output a raw array "rt_raw":
+        raw = plot_psd_pb('file.eeg', 'file.meta', 'file.marker', 
+                                frequency_range=[9, 12], n_samples=500000, 
+                                replay, n_fft=256, montage='biosemi64',
+                                resample_freq=1000)
     '''
     
     import struct
     import json
     import time
     import matplotlib
-    %matplotlib qt5
+    try:
+        matplotlib.use('QT5Agg')
+    except:
+        matplotlib.use('QT4Agg')
     import numpy as np
     import matplotlib.pyplot as plt
     import mne
@@ -228,8 +236,7 @@ def plot_psd_pb(filename, metafile, markerfile, *args, **kwargs):
     ax[0].plot(freqs_eo, psds_diff_mean, color='g', label='Difference')
     ax[0].vlines(x,                                     
                  ymin=np.min(psds_diff_mean), ymax=np.max(psds_diff_mean)+5, colors='m',                                        
-                 label=('Suggested frequency bounds for NF: {} Hz and {} Hz').format(round(x[0]), round(x[1])))
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+                 label=('Suggested frequency bounds for NF: {} Hz and {} Hz').format(round(x[0]), round(x[1])))                                                                                   
     ax[0].legend()
     ax[0].set(title='Welch PSD (EEG)', xlabel='Frequency',
               ylabel='Mean Power Spectral Density (dB)', 
@@ -249,3 +256,4 @@ def plot_psd_pb(filename, metafile, markerfile, *args, **kwargs):
     print('Suggested frequency bounds for NF: {} Hz and {} Hz'.format(round(x[0]), round(x[1])))
     if 'show_fig' in args:
         fig.show()
+    return rt_raw
