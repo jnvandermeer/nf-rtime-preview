@@ -123,7 +123,8 @@ async def get_from_container(container, queue_instructions, queue_data, datasent
 
                         data = container[0:0, :]  # i.e., NO data.
                         markers=[]
-                        queue_data.put((data, markers))  # stop it from jamming?
+                        annotations={}
+                        queue_data.put((data, markers, annotations))  # stop it from jamming?
                         datasent.set()
 
 

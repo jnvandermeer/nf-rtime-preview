@@ -312,14 +312,21 @@ class DataContainer(object):
 
     def obtain_annotations(self, interval):
 
-        b = self.internal_matrix_pos + interval[0]
-        e = self.internal_matrix_pos + interval[1]
+        if len(interval) > 0:
+            b = self.internal_matrix_pos + interval[0]
+            e = self.internal_matrix_pos + interval[1]
+    
+            to_return = dict()
+            for key in self.a.keys():
+                to_return[key] = self.a[key][b:e]
+            return to_return
+        
+        elif len(interval) == 0:
+            to_return = dict()
+            for key in self.a.keys():
+                to_return[key] = []
+            return to_return
 
-        to_return = dict()
-        for key in self.a.keys():
-            to_return[key] = self.a[key][b:e]
-
-        return to_return
 
 
     def obtain_markers(self, interval):

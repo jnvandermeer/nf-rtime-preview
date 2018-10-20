@@ -40,17 +40,27 @@ def convert_alld_allm_to_mne(alld, allm, ch_names,s_freq):
     ev_arr=[]
     for i, item in enumerate(allm):
         sample = int(float(item[0])/1000*raw.info['sfreq'])
-        ev_arr.append([sample, 0, item[1]])
-    
-    
         
-    info = mne.create_info(['STI 014'], raw.info['sfreq'], ['stim'])
+        mvalue = item[1]
+        if isinstance(mvalue,str):
+            if mvalue == 'boundary':
+                pass
+            else:
+                mvalue = int(mvalue[1:])
+        ev_arr.append([sample, 0, mvalue])
+    
+    
+    print(raw.info['sfreq'])
+    # print(raw.info['stim'])
+        
+    info = mne.create_info(['STI 014'], raw.info['sfreq'])
     stim_data = np.zeros((1, len(raw.times)))
     stim_raw = mne.io.RawArray(stim_data, info)
     raw.add_channels([stim_raw], force_update_info=True)
     
     # create the marker matrix:
-    raw.add_events(ev_arr)
+    if len(allm)>0:
+        raw.add_events(ev_arr)
     
     # set calibrations
     for ch in raw.info['chs']:

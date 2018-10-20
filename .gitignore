@@ -96,8 +96,8 @@ venv.bak/
 .mypy_cache/
 # more specific stuff
 .ipynb_checkpoints
-.pyc
-.pkl
+*.pyc
+*.pkl
 .set
 *.set
 .vhdr
