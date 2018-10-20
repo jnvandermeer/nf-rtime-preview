@@ -53,7 +53,7 @@ def convert_alld_allm_to_mne(alld, allm, ch_names,s_freq):
     print(raw.info['sfreq'])
     # print(raw.info['stim'])
         
-    info = mne.create_info(['STI 014'], raw.info['sfreq'])
+    info = mne.create_info(['STI 014'], raw.info['sfreq'], ['stim'])
     stim_data = np.zeros((1, len(raw.times)))
     stim_raw = mne.io.RawArray(stim_data, info)
     raw.add_channels([stim_raw], force_update_info=True)
