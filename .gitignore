@@ -96,9 +96,15 @@ venv.bak/
 .mypy_cache/
 # more specific stuff
 .ipynb_checkpoints
-*.pyc
+.pyc
+.pkl
+.set
+*.set
+.vhdr
+.eeg
+.vmrk
+*.pkl
+.ipynb_checkpoints
+.ipynb_checkpoints/*
+*/.ipynb_checkpoints/*
 gh_pages
-
-
-# Projects/
-.idea/
