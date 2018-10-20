@@ -99,6 +99,7 @@ venv.bak/
 .pyc
 .pkl
 .set
+*.set
 .vhdr
 .eeg
 .vmrk
