@@ -187,7 +187,7 @@ class AmpDecorator(Amplifier):
         self.tcp_reader_running.clear()
 
         logger.debug('Waiting for marker server process to stop...')
-        logger.debug('Using Dirty Hack and Send a KeyboardInterrupt (Linux Only for now): ...')
+        # logger.debug('Using Dirty Hack and Send a KeyboardInterrupt (Linux Only for now): ...')
 
         # try to send a keyboard CTRL-C to the process...
         # well, I could try to do this more nicely.

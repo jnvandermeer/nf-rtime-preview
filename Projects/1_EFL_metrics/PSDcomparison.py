@@ -151,7 +151,6 @@ def plot_psd_pb(filename, metafile, markerfile, *args, **kwargs):
             
             
     #create info
-    
     info = mne.create_info(
     ch_names = ch,
     ch_types = ['eeg' for i in range(len(ch))],

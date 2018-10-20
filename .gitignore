@@ -98,7 +98,14 @@ venv.bak/
 .ipynb_checkpoints
 .pyc
 .pkl
+.set
+.vhdr
+.eeg
+.vmrk
 *.pkl
+.ipynb_checkpoints
+.ipynb_checkpoints/*
+*/.ipynb_checkpoints/*
 gh_pages
 
 
