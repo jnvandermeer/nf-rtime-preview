@@ -15,7 +15,12 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+*.orig
+.orig
 MANIFEST
+
+*.ipynb.orig
+.ipynb.orig
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
