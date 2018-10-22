@@ -85,7 +85,7 @@ class DataContainer(object):
         # so we'll use m as our data matrix. But it's not a data MATRIX object
         # it's an NDarray object in numpy. So we don't get confused. ....
         # this is CRUCIAL - increase allocated memory matrix by factor of 2.
-        m = np.empty((maxlength * 2, hdr['channelCount']))
+        m = np.empty((maxlength * 2, hdr['channelCount']), dtype='float32')  # things will be broadcast into the proper form now -- float32 -- saving 2x the memory.
 
 
 
