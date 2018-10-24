@@ -31,7 +31,7 @@ the modules :func:`beautify` method::
 """
 
 
-from __future__ import division
+
 
 import math
 
@@ -574,7 +574,7 @@ def plot_scalp_ti(v, channels, data, interval, scale_ti=.1, levels=25, colormap=
                                              channel=channelindex, shareaxis=None))
 
         else:
-            print('The channel "' + c + '" was not found in the tenten-system.')
+            print(('The channel "' + c + '" was not found in the tenten-system.'))
 
     return (ax0, ax1), tis
 

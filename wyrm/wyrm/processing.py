@@ -8,7 +8,7 @@ This module contains the processing methods.
 """
 
 
-from __future__ import division
+
 
 import functools
 import logging
@@ -931,12 +931,17 @@ def lfilter(dat, b, a, zi=None, timeaxis=-2):
     ...     ...
 
     """
+
+
     if zi is None:
         data = signal.lfilter(b, a, dat.data, axis=timeaxis)
         return dat.copy(data=data)
     else:
-        data, zo = signal.lfilter(b, a, dat.data, zi=zi, axis=timeaxis)
-        return dat.copy(data=data), zo
+        if dat.data.shape[0] == 0:
+            return dat.copy(data=dat.data), zi  # if the size of data == 0; then we got empty data. Return original zi in this case.
+        else:
+            data, zo = signal.lfilter(b, a, dat.data, zi=zi, axis=timeaxis)
+            return dat.copy(data=data), zo
 
 
 def filtfilt(dat, b, a, timeaxis=-2):

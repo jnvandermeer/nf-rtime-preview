@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import copy
 import pdb
+import scipy
 
 # from this data (in memory), create a new MNE dataset.
 def convert_alld_allm_to_mne(alld, allm, ch_names,s_freq):
@@ -92,6 +93,7 @@ def select_part_from_mne_dataset(rawin, **kwargs):
     where you select b and e as samples, and all evs, etc, will be handled.
     Basically, you have to make a new dataset from the old MNE dataset.
     I don't know why a function like this doesn't already exist.
+    The signal will be detrended with scipy.signal.detrend along rows
     """
     
     # print('hallo2!!!')
@@ -104,12 +106,14 @@ def select_part_from_mne_dataset(rawin, **kwargs):
         if isinstance(boundaries[0], list) or isinstance(boundaries[0], tuple):
             for item in boundaries:
                 b, e = item
-                newdat.append(rawin[:,b:e][0])
+                newdat.append(scipy.signal.detrend(rawin[:,b:e][0],axis=1))
+                #newdat.append(rawin[:,b:e][0])
         else:
             b=boundaries[0]
             e=boundaries[1]
             
-            newdat.append(rawin[:,b:e][0])
+            newdat.append(scipy.signal.detrend(rawin[:,b:e][0],axis=1))
+            #newdat.append(rawin[:,b:e][0])
         
         newdat=np.concatenate(newdat, axis=1)
                 

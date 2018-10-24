@@ -7,7 +7,7 @@ This module provides the basic data types for Wyrm, like the
 """
 
 
-from __future__ import division
+
 
 import copy
 import logging
@@ -181,7 +181,7 @@ class Data(object):
         """
         return not self.__eq__(other)
 
-    def __nonzero__(self):
+    def __bool__(self):
         """Return the truth value for the object instance.
 
         Similar to Python's built in types we return ``False`` if the

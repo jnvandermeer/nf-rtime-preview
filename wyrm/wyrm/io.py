@@ -7,7 +7,7 @@ various formats.
 
 """
 
-from __future__ import division
+
 
 from os import path
 import logging
@@ -19,6 +19,7 @@ import numpy as np
 from scipy.io import loadmat
 
 from wyrm.types import Data
+import pdb
 
 
 logging.basicConfig(level=logging.NOTSET)
@@ -124,10 +125,11 @@ def load_brain_vision_data(vhdr):
     """
     logger.debug('Loading Brain Vision Data Exchange Header File')
     with open(vhdr) as fh:
-        fdata = map(str.strip, fh.readlines())
-    fdata = filter(lambda x: not x.startswith(';'), fdata)
-    fdata = filter(lambda x: len(x) > 0, fdata)
+        fdata = list(map(str.strip, fh.readlines()))
+    fdata = [x for x in fdata if not x.startswith(';')]
+    fdata = [x for x in fdata if len(x) > 0]
     # check for the correct file version:
+    # pdb.set_trace()
     assert fdata[0].endswith('1.0')
     # read all data into a dict where the key is the stanza of the file
     file_dict = dict()
@@ -151,14 +153,15 @@ def load_brain_vision_data(vhdr):
     sampling_interval_microseconds = float(file_dict['Common Infos']['SamplingInterval'])
     fs = 1 / (sampling_interval_microseconds / 10**6)
     channels = [file_dict['Channel Infos']['Ch%i' % (i + 1)] for i in range(n_channels)]
-    channels = map(lambda x: x.split(',')[0], channels)
+    channels = [x.split(',')[0] for x in channels]
     resolutions = [file_dict['Channel Infos']['Ch%i' % (i + 1)] for i in range(n_channels)]
-    resolutions = map(lambda x: float(x.split(',')[2]), resolutions)
+    resolutions = [float(x.split(',')[2]) for x in resolutions]
     # assert all channels have the same resolution of 0.1
     # FIXME: that is not always true, for example if we measure pulse or
     # emg
     #assert all([i == 0.1 for i in resolutions])
     # some assumptions about the data...
+    # pdb.set_trace()
     assert file_dict['Common Infos']['DataFormat'] == 'BINARY'
     assert file_dict['Common Infos']['DataOrientation'] == 'MULTIPLEXED'
     assert file_dict['Binary Infos']['BinaryFormat'] == 'INT_16'
@@ -480,7 +483,7 @@ def load_bcicomp3_ds2(filename):
     targets = [[i, 'target'] for i in timeaxis[target_mask]]
     nontargets = [[i, 'nontarget'] for i in timeaxis[nontarget_mask]]
     dat.stimulus_code = stimulus_code[:]
-    stimulus_code = zip([t for t, _ in flashing], [STIMULUS_CODE[i] for i in stimulus_code])
+    stimulus_code = list(zip([t for t, _ in flashing], [STIMULUS_CODE[i] for i in stimulus_code]))
     markers = flashing[:]
     markers.extend(targets)
     markers.extend(nontargets)
