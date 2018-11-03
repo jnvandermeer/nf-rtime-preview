@@ -18,6 +18,9 @@ wheels/
 *.orig
 .orig
 MANIFEST
+*.nii
+.nii
+
 
 *.ipynb.orig
 .ipynb.orig
