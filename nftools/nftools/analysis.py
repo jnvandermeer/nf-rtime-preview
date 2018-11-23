@@ -78,7 +78,7 @@ def convert_alld_allm_to_mne(alld, allm, ch_names,s_freq):
             ch['cal']= 1.0
             ch['range']= 1.0
             ch['unit']= -1
-            ch['unit_mul']: 0.0
+            ch['unit_mul']= 0.0
 
 
     # set av. reference, too:
