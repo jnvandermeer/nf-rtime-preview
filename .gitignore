@@ -112,9 +112,14 @@ venv.bak/
 *.set
 .vhdr
 .eeg
+.marker
+*.marker
+*.eeg
 .vmrk
 *.pkl
 .ipynb_checkpoints
 .ipynb_checkpoints/*
 */.ipynb_checkpoints/*
 gh_pages
+.fif
+*.fif
