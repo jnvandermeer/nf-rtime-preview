@@ -1,4 +1,4 @@
-from __future__ import division
+
 
 import time
 import logging
@@ -48,13 +48,14 @@ class LSLAmp(Amplifier):
 
         """
         # lsl defined
+        #self.max_samples = 4096
         self.max_samples = 1024
         # open EEG stream
         logger.debug('Opening EEG stream...')
         streams = pylsl.resolve_stream('type', 'EEG')
         if len(streams) > 1:
             logger.warning('Number of EEG streams is > 0, picking the first one.')
-        self.lsl_inlet = pylsl.StreamInlet(streams[0])
+        self.lsl_inlet = pylsl.StreamInlet(streams[0], max_buflen=30)
         # open marker stream
         logger.debug('Opening Marker stream...')
         # TODO: should add a timeout here in case there is no marker
@@ -62,19 +63,33 @@ class LSLAmp(Amplifier):
         streams = pylsl.resolve_stream('type', 'Markers')
         if len(streams) > 1:
             logger.warning('Number of Marker streams is > 0, picking the first one.')
-        self.lsl_marker_inlet = pylsl.StreamInlet(streams[0])
+        self.lsl_marker_inlet = pylsl.StreamInlet(streams[0], max_buflen=30)
         info = self.lsl_inlet.info()
         self.n_channels = info.channel_count()
         self.channels = ['Ch %i' % i for i in range(self.n_channels)]
         self.fs = info.nominal_srate()
         logger.debug('Initializing time correction...')
-        self.lsl_marker_inlet.time_correction()
-        self.lsl_inlet.time_correction()
+        
+        
+        self.do_time_correction = True
+        try:
+            self.lsl_marker_inlet.time_correction(timeout=2.0)
+        except Exception:
+            self.do_time_correction = False
+            logger.debug('Timeout whe tying marker_inlet time_correction')
+            
+        try:
+            self.lsl_inlet.time_correction(timeout=2.0)
+        except Exception:
+            self.do_time_correction = False
+            logger.debug('Timeout whe tying marker_inlet time_correction')
+            
+            
         logger.debug('Configuration done.')
 
     def start(self):
         """Open the lsl inlets.
-
+        
         """
         logger.debug('Opening lsl streams.')
         self.lsl_inlet.open_stream()
@@ -97,8 +112,13 @@ class LSLAmp(Amplifier):
         first sample of that block.
 
         """
-        tc_m = self.lsl_marker_inlet.time_correction()
-        tc_s = self.lsl_inlet.time_correction()
+        if self.do_time_correction:
+            # print('doing time correction')
+            tc_m = self.lsl_marker_inlet.time_correction()
+            tc_s = self.lsl_inlet.time_correction()
+        else:
+            tc_m = 0.0
+            tc_s = 0.0
 
         markers, m_timestamps = self.lsl_marker_inlet.pull_chunk(timeout=0.0, max_samples=self.max_samples)
         # flatten the output of the lsl markers, which has the form
@@ -106,13 +126,17 @@ class LSLAmp(Amplifier):
         markers = [str(i) for sublist in markers for i in sublist]
 
         # block until we actually have data
-        samples, timestamps = self.lsl_inlet.pull_chunk(timeout=pylsl.FOREVER, max_samples=self.max_samples)
+        #samples, timestamps = self.lsl_inlet.pull_chunk(timeout=pylsl.FOREVER, max_samples=self.max_samples)
+        samples, timestamps = self.lsl_inlet.pull_chunk(timeout=0.0, max_samples=self.max_samples)
         samples = np.array(samples).reshape(-1, self.n_channels)
+        
+        if len(timestamps) > 0:
 
-        t0 = timestamps[0] + tc_s
-        m_timestamps = [(i + tc_m - t0) * 1000 for i in m_timestamps]
+            t0 = timestamps[0] + tc_s
+            m_timestamps = [(i + tc_m - t0) * 1000 for i in m_timestamps]
 
-        return samples, zip(m_timestamps, markers)
+
+        return samples, list(zip(m_timestamps, markers))
 
     def get_channels(self):
         """Get channel names.

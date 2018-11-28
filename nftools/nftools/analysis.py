@@ -11,6 +11,86 @@ import matplotlib.pyplot as plt
 import copy
 import pdb
 import scipy
+import struct
+import json
+import re
+
+
+
+
+def convert_eeg_marker_meta_to_mne(fbase):
+    
+    fhe=open(fbase + '.eeg')
+    #fhm=open(fbase + '.marker')
+    fhj=open(fbase + '.meta')
+    
+
+    # doing the meta / header:
+    meta=json.load(fhj)
+    print(meta)
+
+
+    # reading the data
+    m = np.fromfile(fhe, dtype=np.float32)
+    m=m.reshape(round(len(m)/64),64).transpose()
+
+
+    # more header information
+    info = mne.create_info(
+    ch_names=meta['Channels'],
+    ch_types = ['eeg' for i in range(64)],
+    sfreq=meta['Sampling Frequency']
+    )
+    
+    
+    # create dataset, I
+    custom_raw = mne.io.RawArray(m, info)
+    print(custom_raw)
+    
+    
+    # add marker information to that:
+    with open(fbase + '.marker') as file:
+        content = file.readlines()
+    # you may also want to remove whitespace characters like `\n` at the end of each line
+    content = [x.strip() for x in content] 
+    print(content)
+    
+    
+    # create the marker matrix
+    ev_arr=[]
+    for i, item in enumerate(content):
+        out=re.split("[\s|S|T]+", item)
+        if 'Sync Off' in item:
+            sample = int(float(out[0])/1000*meta['Sampling Frequency'])
+            code = 250
+        else:
+            sample = int(float(out[0])/1000*meta['Sampling Frequency'])
+            code = int(out[1])
+    
+        # print(out)
+        # print(sample)
+        ev_arr.append([sample, 0, code])
+
+
+
+        custom_raw = mne.io.RawArray(m, info)
+        # print(custom_raw)
+
+
+    if ev_arr:
+        info = mne.create_info(['STI'], custom_raw.info['sfreq'], ['stim'])
+        stim_data = np.zeros((1, len(custom_raw.times)))
+        stim_raw = mne.io.RawArray(stim_data, info)
+        custom_raw.add_channels([stim_raw], force_update_info=True)
+    
+        # create the marker matrix:
+        custom_raw.add_events(ev_arr)
+
+
+    return custom_raw
+
+
+
 
 # from this data (in memory), create a new MNE dataset.
 def convert_alld_allm_to_mne(alld, allm, ch_names,s_freq):
