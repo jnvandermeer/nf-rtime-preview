@@ -104,6 +104,8 @@ venv.bak/
 .mypy_cache/
 # more specific stuff
 .ipynb_checkpoints
+.mat
+*.mat
 *.pyc
 *.pkl
 .bak
