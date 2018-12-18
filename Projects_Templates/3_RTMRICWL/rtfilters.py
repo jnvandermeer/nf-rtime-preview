@@ -6,9 +6,31 @@ from scipy import signal
 from scipy.signal import lfilter_zi
 
 
+import scipy
+import scipy.io
+
+
 import numpy as np
 from scipy.stats.stats import pearsonr
 import pdb
+import ipdb
+
+import logging
+import time
+# import copy
+
+# apparently, we can do this:
+log=logging.getLogger('rtfilters')
+
+
+
+
+# helpful snippet for making tons of matfiles (to be used later)
+from time import mktime, gmtime
+
+def now_matfile(): 
+   return str(int(mktime(gmtime())))
+
 
 class RtFilter():
     def __init__(self, *args, **kwargs):
@@ -34,7 +56,7 @@ class HPF(RtFilter):
         
         self.f=f
         self.fs=fs
-        self.order=3
+        self.order=order
 
         self.b, self.a = signal.butter(order, 2*f/fs, btype='high', analog=False)
         zi = lfilter_zi(self.b, self.a)
@@ -62,7 +84,7 @@ class LPF(RtFilter):
         
         self.f=f
         self.fs=fs
-        self.order=3
+        self.order=order
 
         self.b, self.a = signal.butter(order, 2*f/fs, btype='low', analog=False)
         zi = lfilter_zi(self.b, self.a)
@@ -89,7 +111,7 @@ class BPF(RtFilter):
         
         self.f=f
         self.fs=fs
-        self.order=3
+        self.order=order
 
         self.b, self.a = signal.butter(order, [2*f[0]/fs, 2*f[1]/fs], btype='band', analog=False)
         zi = lfilter_zi(self.b, self.a)
@@ -383,18 +405,62 @@ class MR(RtFilter):
 
 
 
-def estimate_it(X, y, Yprev, qbetas):
+def estimate_it(X, y, Yprev, prev_betas):
     """ The function that ACTUALLY estimates beta's -- the rest is all upkeep & maintenance
     """
     
-    inv = np.pinv(np.dot(X.T, X))
+    # ipdb.set_trace()
+    inv = np.linalg.pinv(np.dot(X.T, X))
     
-    betas = np.dot(inv, X.T, y)
+    betas = np.dot(inv, np.dot(X.T, y))
     
-    diff = Yprev - np.dot(X, betas)
+    diff1 = np.dot(X, prev_betas) - np.dot(X, betas)
+    diff2 = Yprev - np.dot(X, betas)
 
-    qbetas.put((betas, diff))
+
+    
+    
+    fname = 'glm' + now_matfile()
+    
+    scipy.io.savemat(fname, {'X':X, 'betas':betas, 'prev_betas':prev_betas, 'diff1':diff1, 'diff2':diff2, 'y':y, 'Yprev':Yprev})
     #qdiff.put(diff)
+
+    return betas, diff1, diff2
+
+    # from these .mat files --> reconstruct the difference between 'optimal non-real-time' and 'use previous' and 'kalmanned'
+
+
+class estimatorProcess(multiprocessing.Process):
+
+    """ starting up a separate Process each time a window is to be estimated takes up too much computational resources
+        so start up that Process just once - at the beginning of the meausrement
+    """
+    
+    def __init__(self, q_in, q_out):
+        
+        super(estimatorProcess, self).__init__()
+        self.ev_stop = multiprocessing.Event()
+        self.q_in = q_in
+        self.q_out = q_out
+        
+        
+    
+    def run(self):
+        
+        while not self.ev_stop.is_set():
+            time.sleep(0.005)
+            
+            if not self.q_in.empty():
+                
+                X, y, Yprev, prev_betas = self.q_in.get()
+                
+                betas, diff1, diff2 = estimate_it(X, y, Yprev, prev_betas)
+        
+                self.q_out.put((betas, diff1, diff2))
+        
+
+    def stop(self):
+        self.ev_stop.set()
 
 
             
@@ -408,8 +474,10 @@ class CWL(RtFilter):
     def __init__(self, seconds_in_window=6.0, tdelay=0.035, icws=[1,2,3], ichs=[33,34,35,36], fs=1000, highpass=[]):
         super(CWL, self).__init__(seconds_in_window=seconds_in_window, tdelay=tdelay, icws=icws, ichs=ichs, fs=fs, highpass=highpass)
         
+        self.rtfilter = RtFilter()
         
         
+        self.DEBUG=False
         self.seconds_in_window=seconds_in_window  # how long (samples) should the window be that we use
         
         self.tdelay=tdelay  #=tfuture  # how many samples 'future' to use (output signal will be delayed by so many samples!)
@@ -435,29 +503,53 @@ class CWL(RtFilter):
         # this will be very useful later on!!
         self.delayvec = np.array(range(self.sfuture+self.spast+1)) - self.spast
         
-        self.zerodelayindex = np.where(self.delayvec == 0)
+        self.zerodelayindex = np.where(self.delayvec == 0)[0][0]
         
         self.XnTemplate = np.zeros((self.nwin, len(self.icws) * (self.sfuture+self.spast+1)))
         
         # calculate the windowing functions:
-        
         m=np.concatenate((np.matrix(self.taperfunction(self.sfuture+self.spast+1)).T,np.matrix(range(self.sfuture+self.spast+1)).T),axis=1)
-        m=np.tile(m,(self.icws,1))
+        
+        #pdb.set_trace()
+        m=np.tile(m,(len(self.icws),1))
         h=m[np.argsort(m[:,1],axis=0),0]
         
+        # hanning-windowed delay in time-delay direction (over ~50 msec)
         hDelayMat=np.ones((self.nwin,1)) * h.T
         
+        # ipdb.set_trace()
+        
+        # hanning-windowed delay in time direction (over ~6sec)
         hTimeMat=np.matrix(self.taperfunction(self.nwin)).T * np.ones((1,len(self.icws) * (self.sfuture+self.spast+1)))
         
-        self.hwts = np.multiply(hDelayMat, hTimeMat)
+        # the full window...
+        self.hwts = np.array(np.multiply(hDelayMat, hTimeMat))
+        
+        # we need for y:
+        self.hwy = np.array(self.taperfunction(self.nwin)).reshape(self.nwin, 1)
 
         
         self.taperlist = []   # this is where we collect stuff as per my notes.
+        
+        
+        
+        win_startstep = (self.nwin-1)/self.taperfactor/2
+        if win_startstep % 2 != 0:
+            raise Exception('Your window size is bad for current tapering specs')
+            # the program stops here.
+            # make sure that the tapering and window size are integer-divisible
+            # otherwise things don't add up so nicely.
+        else:
+            win_startstep = int(win_startstep)
+            
+        
         for i in range(self.taperfactor*2):
             self.taperlist.append({
-                    's':(i-1) * (self.nwin-1)/self.taperfactor*2, 
-                    'Xn':np.zeros((self.nwin, self.icws * (self.sfuture+self.spast+1))), 
-                    'y':np.zeros((self.nwin,len(self.ichs)))
+                    's':i * win_startstep, 
+                    'Xn':np.zeros((self.nwin, len(self.icws) * (self.sfuture+self.spast+1))), 
+                    'y':np.zeros((self.nwin,len(self.ichs))),
+                    'Y':np.zeros((self.nwin,len(self.ichs))),
+                    'b':np.zeros((len(self.icws)*(self.spast+self.sfuture+1),1))
                     # we don't do that, yet - this will remain 'open' always.
                     #'b':np.zeros((self.icws * (self.sfuture+self.spast+1), 1)),
                     #'number':0,
@@ -475,17 +567,29 @@ class CWL(RtFilter):
         self._buffereddata = []
         self._buffereddata2 = []
         
+        self._queue_estimate_it = multiprocessing.Queue()
         self._queue_incoming_betas = multiprocessing.Queue()
-        self._queue_incoming_diffs = multiprocessing.Queue()
+
+        # ipdb.set_trace()
+        # start up our estimator Process:        
+        self.estimatorProcess = estimatorProcess(self._queue_estimate_it, self._queue_incoming_betas)
+        self.estimatorProcess.start()
+
         
-        self.betas=[]
+        # self._queue_incoming_diffs = multiprocessing.Queue()
+        self.betas_are_estimated=False
+        self.betas=[np.zeros((len(self.icws)*(self.spast+self.sfuture+1),1))]
+        
+        self.currentbetas = self.betas[-1]
         self.switch_betas=False
         
-        self.processes=[]
         
     
     def handle(self, data):
         
+        
+        # first to do timeshifting stuff --> then worry about allocation into different subregions...
+        ddata, dy, dXn = self._handle_delays(data)
         
         s=self.s  # current sample
         N=data.shape[0]
@@ -493,149 +597,315 @@ class CWL(RtFilter):
         
         #cleaned_chs=[]
         # cleaned_data = self._return_delayed_data()
-        
+        # ipdb.set_trace()
         cleaned = []
-        for i in len(self.taperlist):
-            cleaned.append(data[:,len(self.ichs)].copy())
+        for i in range(len(self.taperlist)):
+            cleaned.append(data[:,0:len(self.ichs)].copy())
+
+
+        if self.DEBUG:
+            sumcheck = []
+            for i in range(len(self.taperlist)):
+                sumcheck.append(data[:,0:len(self.ichs)].copy())
+        
 
         # cwls = data[:,self.icws]  # better do it here - breakdown into cwls and signals
         # signals = data[:,self.ichs]  # when we return data, we replace some cols from data with corrected signals
         
         # go through the list as per our notes -- only COLLECT here, and start new estimations where necessary.
-        for l, itaper in enumerate(self.taperlist):
+        for itaper, tli in enumerate(self.taperlist):
             
             finished=False
             cur_s = s
             
+            
+            # if itaper == 1 and tli['s'] > 9000 and cur_s > 17000:
+            #     ipdb.set_trace()
+            # re-do this -- figure out DATA indices, and X indices
+            # then make a list of that
+            # then just go through the list
+            # otherwise I cannot follow it anymore
+            
             while not finished:
                 
-                # check for beta queue                
-                if s+N > l['s'] + nwin:
-                    curN = l['s'] + nwin - cur_s
-                else:
-                    curN = N
-            
+                if cur_s >= tli['s']:
+                    # ipdb.set_trace()
+                    # check for beta queue                
+                    if s+N > tli['s'] + nwin:
+                        curN = tli['s'] + nwin - cur_s
+                    else:
+                        curN = s + N - cur_s
+                
+                        
+                    bXn = cur_s - tli['s']  # see notes
+                        
+                    eXn = bXn + curN   # see notes
                     
-                bXn = cur_s - l['s']  # see notes
-                eXn = bXn + curN   # see notes
+                    Xindices=range(bXn,eXn)  # taking care of neg/positive...
+                    
+                    bd = cur_s - s   # see notes
+                    ed = bd + curN   # see notes
+                    
+                    dindices=range(bd,ed)
+                    # put y and X where they belong
+                    #ipdb.set_trace()
+                    
+                    #pd = part of delay(ed)...
+                    pdXn, pdy = self._handle_partition_and_hanning(dy, dXn, dindices, Xindices)
+
+                    pdY = np.dot(pdXn, tli['b'])
+                    pde = pdy-pdY
+
+                    tli['Xn'][Xindices,:] = pdXn
+                    tli['y'][Xindices,:] = pdy
+                    tli['Y'][Xindices,:] = pdY
                 
-                bd = cur_s - s   # see notes
-                ed = bd + curN   # see notes
-                
-                # put y and X where they belong
-                Xn, y, Y, e = self._handle_delay_taper_cwl_channel_selection(data[bd:ed,:], self.hwts[bXn:eXn,:])
-            
-                l['Xn'][bXn:eXn,:] = Xn
-                l['y'][bXn:eXn,:] = y
-                l['Y'][bXn:eXn,:] = Y
-            
-                cleaned[itaper][bd:ed,self.icwl] = e  # assign the data
-    
-                if l['s'] + nwin >= s + N:
+                    cleaned[itaper][dindices,:] = pde  # assign the data
+                    if self.DEBUG:
+                        sumcheck[itaper][dindices,:] = self.hwy[Xindices,:]
+        
+                if tli['s'] + nwin > s + N:
                     finished=True
+                    gotoNextWindow=False
+                elif tli['s'] + nwin == s + N:
+                    finished=True
+                    gotoNextWindow=True
                 else:
-                    l['s'] += nwin-1
-                    cur_s = l['s']
+                    finished=False
+                    gotoNextWindow=True
+                        
+                        
+                if gotoNextWindow:       
+                 
+                    # 'send off' the current window for estimation
+                    self._estimate_betas(tli)
+                    # ipdb.set_trace()
+                    
+                    # 'init' a new one, too. associate our most current beta's to that
+                    self._check_switch_betas()  # figure out / upkeep on beta estimations - check the queue. -- kalman should be implemented here?
+                    tli['b'] = self.betas[-1]   # assign the latest one(s) -- or the Kalman estimated ones
+
+                    tli['s'] += nwin-1
+                    cur_s = tli['s']
+                    tli['Xn'] =np.zeros((self.nwin, len(self.icws) * (self.sfuture+self.spast+1)))
+                    # you completed a window --> adjust s and N
+                    
+
+                    #ipdb.set_trace()
+                    
+                        
+                    
+                    # HERE - we figure out whether we 'set' the beta's - or not
+                    # if they're set -- then, we we associate the latest set of beta's to the current window
+                    # we also will not anymore check whether beta's are estimated
+                    # instead, we fill the list of 'current' beta's with 0. That will produce 0, too.
+                    # we also need to pass the current beta's...
                     
                     # if we're here, then we need to estimate something!
                     # send (complete) window to estimator
-                    
-                    self._check_switch_betas()
-                    self._estimate_betas(l)
-            
+                    # ipdb.set_trace()
+                    # self._check_switch_betas()
+
+        #if s > 17000:
+        #    ipdb.set_trace()
 
         # sum it all up
         if self.taperfactor == 1:
             cleaned_channels = sum(cleaned)  # summate over the tapers (we have 2 tapers with taperfactor == 1, usually.)
+            if self.DEBUG:
+                checked_sumcheck = sum(sumcheck)
         else:
             cleaned_channels = sum(cleaned) / float(self.taperfactor)
+            if self.DEBUG:
+                checked_sumcheck = sum(sumcheck) / float(self.taperfactor)
 
-
-        # the data is a little bit delayed - return that - according to the len of the time-expansion
-        return_data = self._return_delayed_data(data)
+        
+        #if s > 17000:
+        #    ipdb.set_trace()
 
         # set the corrected channels to the channels that we just corrected!
-        return_data[:,self.ichs] = cleaned_channels
-            
-        return self.rtfilter.handle(return_data)
+        ddata[:,self.ichs] = cleaned_channels
+        if self.DEBUG:
+            ddata[:,self.ichs] = checked_sumcheck  # check whether the weights are always == 1!
+        self.s += data.shape[0]   
+        return self.rtfilter.handle(ddata)
                             
 
-    
-    def _handle_delay_taper_cwl_channel_selection(self, data, windowing):
-        """ So, this will recall the last bit of the data, and take care
-            of all of the tdelay stuff, so I don't have to worry about it
-            in the main function
-            Estimate new beta's in a separate Process.
-            Will also multiply with the Taper Windows...
-            and will also tease out the data channels (y) from the cwl channels(Xn)
-            upon calling it -- it will store some old data to allow good time shifts...
-            # we already buffered the data?
+
+    def _handle_partition_and_hanning(self, dy, dXn, dindices, Xindices):
+        
+        """ So this should be simple enough 
+            - use dincides on data(selecting a part of it)
+            - then apply hanning window following Xindices on both dXn and dy
+            - and return result?
         """
-
-        self._buffer_data(data, self.sfuture + self.spast + 1)
-        # this function should return the following items:
-        # Xn - which is the part of the Design Matrix
-        # y - which is the measured data (i.e. DELAYED data) - and coupled to Xn for (later) estimation of Betas
-        # Y - this hs the (current) DM multiplied by beta wts
-        # e - this is the cleaned EEG cor those channels that were selected
-
-        cwls=self._buffereddata[:,self.icws]
-        signals = self._buffereddata[:,self.ichs]
-
-
-        # create the part of the Design Matrix now... - initialization...
-        Xn = np.zeros(cwls.shape[0], cwls.shape[1] * (self.sfuture+self.spast+1))
         
-        # this fills (not entire, but part of) matrix up with the CWL (time-delayed versions) of the signal
+        
+        # ipdb.set_trace()
+        hanning_for_y = self.hwy[Xindices,:]
+        
+        pdy = dy[dindices] * hanning_for_y
+
+        hanning_for_dXn = self.hwts[Xindices,:]
+        
+        pdXn = dXn[dindices,:] * hanning_for_dXn
+        
+        return pdXn, pdy
+        
+        
+        
+        
+        
+
+    def _handle_delays(self, data):
+        """ This function return in delayed form: 
+                (a) the full data (because we need it)
+                (b) the data specified by the cwl's (i.e., y)
+            reurns in time-expanded form:
+                (c) the Xn - with the temporal expansion(s)
+        """
+        
+        
+        # first - buffer it
+        self._buffer_data(data, self.sfuture + self.spast)
+        
+        
+        # then get the data (and make a copy of it?)
+        tmpdata = copy.deepcopy(self._buffereddata)
+        
+        # then: construct the Xn
+        Xn = np.zeros((data.shape[0], len(self.icws) * (self.sfuture+self.spast+1)))
+
         # here is the magic where things get 'delayed' - the stuff we put in...
-        for d, i in enumerate(self.delayvec):
+        for i, d in enumerate(self.delayvec):
             
-            startind = -len(self.delayvec)+i-data.shape[0]
-            stopind = -len(self.delayvec)+i+1
-            if stopind == 0:
-                stopind = None
+            # this is now actually correct!
+            startind = -len(self.delayvec)+i-data.shape[0]+1
+            stopind = startind + data.shape[0]
+            
+            # ipdb.set_trace()
+            tmpdata2=tmpdata[range(startind,stopind), :]
+            Xn[:, i*len(self.icws):(i+1)*len(self.icws)] = tmpdata2[:, self.icws]        
+        
+        
+        # Xn is done: now deal with y
+        # normal_range:
+        startind = -self.zerodelayindex-data.shape[0]
+        stopind = startind + data.shape[0]
+        
+        alldata = tmpdata[range(startind,stopind),:]
+        
+        y=alldata[:,self.ichs]
+        
+        
+        return alldata, y, Xn
+        
+            
 
-            Xn[:, i*len(self.icws):(i+1)*len(self.icws)] = cwls[startind:stopind,:]
-
-        # apply the windowing (passed on as argument...)
-        Xn *= windowing
-
-        # and this is the y that goes with it:
-        y = signals[-self.zerodelayindex - data.shape[0]:-self.zerodelayindex,:]
-
-
-        if self.betas_are_estimated:
-            # so, IF beta's are estimated (there is 1 beta PER CHANNEL), do that here, too.
-            Y = np.dot(Xn, self.current_betas)
-        else:            
-            Y = np.zeros(signals.shape)
-
-        # so this should be the artifact-corrected EEG signal - return it.
-        e = y - Y
-
-        return Xn, y, Y, e
-        # l['Xn'][bXn:eXn,:], l['y'][bXn:eXn,:], Y, e
+    
+    #    def _handle_delay_taper_cwl_channel_selection(self, data, windowing, betas):
+    #        """ So, this will recall the last bit of the data, and take care
+    #            of all of the tdelay stuff, so I don't have to worry about it
+    #            in the main function
+    #            Estimate new beta's in a separate Process.
+    #            Will also multiply with the Taper Windows...
+    #            and will also tease out the data channels (y) from the cwl channels(Xn)
+    #            upon calling it -- it will store some old data to allow good time shifts...
+    #            # we already buffered the data?
+    #        """
+    #
+    #        # print(data.shape)
+    #
+    #        #if len(data)>0 and len(windowing)==0:
+    #        #    ipdb.set_trace()
+    #
+    #        # the +1 is rather essential here.
+    #        # the len of delayvec is f.e. 71 - but the delay of ==0
+    #        # is already taken care of and doesn't require much adjustments 
+    #        # therefore, we only need the stuff WITHOUT the +1
+    #
+    #        # self._buffer_data(data, self.sfuture + self.spast + 1)
+    #        self._buffer_data(data, self.sfuture + self.spast)
+    #        
+    #        # this function should return the following items:
+    #        # Xn - which is the part of the Design Matrix
+    #        # y - which is the measured data (i.e. DELAYED data) - and coupled to Xn for (later) estimation of Betas
+    #        # Y - this hs the (current) DM multiplied by beta wts
+    #        # e - this is the cleaned EEG cor those channels that were selected
+    #
+    #        cwls=copy.copy(self._buffereddata[:,self.icws])
+    #        signals = copy.copy(self._buffereddata[:,self.ichs])
+    #
+    #
+    #        # ipdb.set_trace()
+    #        # create the part of the Design Matrix now... - initialization...
+    #        Xn = np.zeros((data.shape[0], cwls.shape[1] * (self.sfuture+self.spast+1)))
+    #
+    #
+    #        # so let's see if this holds anything true...
+    #        # ipdb.set_trace()        
+    #        # this fills (not entire, but part of) matrix up with the CWL (time-delayed versions) of the signal
+    #        # here is the magic where things get 'delayed' - the stuff we put in...
+    #        for i, d in enumerate(self.delayvec):
+    #            
+    #            # this is now actually correct!
+    #            startind = -len(self.delayvec)+i-data.shape[0]+1
+    #            stopind = -len(self.delayvec)+i+1
+    #            
+    #
+    #            Xn[:, i*len(self.icws):(i+1)*len(self.icws)] = cwls[range(startind,stopind),:]
+    #
+    #        # apply the windowing (passed on as argument...)
+    #        Xn *= windowing
+    #
+    #        # and this is the y that goes with it:
+    #        y = signals[-self.zerodelayindex - data.shape[0]:-self.zerodelayindex,:]
+    #        
+    #        
+    #        # find the middle index (i.e., the 'pure' hanning window part of this guy)
+    #        middleIndex=int((len(self.delayvec) - 1)/2 * len(self.icws))
+    #        
+    #        # expand it for all the y (i.e., the data)
+    #        hann_multiplier_for_y = np.dot(windowing[:,middleIndex], np.ones((1, signals.shape[1])))
+    #        
+    #        # multiply it!!!
+    #        y *= hann_multiplier_for_y
+    #
+    #        # this will be 0 initially, but as beta's are estimated and passed on -- will be nonzero (and artifact correction will kick in)
+    #        Y = np.dot(Xn, betas)
+    #
+    #        # so this should be the artifact-corrected EEG signal - return it.
+    #        e = y - Y
+    #
+    #        return Xn, y, Y, e
+    #        # l['Xn'][bXn:eXn,:], l['y'][bXn:eXn,:], Y, e
         
 
 
     
-    def _estimate_betas(self, l):
+    def _estimate_betas(self, tli):
         """ This function will actually Estimate beta's, from a 'completed' window l
         """
         # first it will make a copy that we're going to use
         
         # then it will make a Process that will do the actual estimation
-        X = l['Xn']
-        y = l['y']
-        Yprev = l['Y']
         
+        #ipdb.set_trace()
+        X = tli['Xn']
+        y = tli['y']
+        Yprev = tli['Y']
+        
+
+        prev_betas = self.betas[-1]
+
         # contains 6 regressors; taken with different time delays
         # so the beta's are per cwl-per-delay the fit to y.
+        # ipdb.set_trace()
+        #p=multiprocessing.Process(target=estimate_it, args=(X, y, Yprev, self._queue_incoming_betas, prev_betas))
+        #p.start()
         
-        p=multiprocessing.Process(target=estimate_it, args=(X, y, Yprev, self._queue_incoming_betas))
-        p.start()
-        
-        self.processes.append(p)  # for joining later on...
+        self._queue_estimate_it.put((X, y, Yprev, prev_betas))
+        # self.processes.append(p)  # for joining later on...
             
 
 
@@ -644,29 +914,26 @@ class CWL(RtFilter):
         """ check the queues -- do upkeep with those outputs, plz...
         """
         # check the queus - if they are full/filled, then change betas
-        if self._queue_incoming_betas.qsize > 0:
-            betas, diffs = self._queue_incoming_betas.qsize.get()
+        #ipdb.set_trace()
+        if not self._queue_incoming_betas.empty():
+            betas, diff1, diff2 = self._queue_incoming_betas.get()
             
             # we append em here...
             self.betas.append(betas)
 
-            if not self.betas_are_estimated:
-                self.betas_are_estibated = True
+            # simple assignment - or use Kalman or some average..
+            self.currentbetas=self.betas[-1]
+            #if not self.betas_are_estimated:
+            #    self.betas_are_estimated = True
 
-            self.current_betas = self.betas[-1]
+            # self.current_betas = self.betas[-1]
             # we won't do anything with the diff's for now.
 
                 
             # pop if it's getting too much
-            while len(self.betas) > 10:
-                self.betas.pop(0)
+            #while len(self.betas) > 10:
+            #    self.betas.pop(0)
 
-        
-        for p in self.processes:
-            if not p.is_alive():
-                # we can do this because we always immedeately start processes
-                p.join()
-        
     
         
     def _return_delayed_data(self, data):
@@ -679,7 +946,7 @@ class CWL(RtFilter):
             so it also has like a buffer.
         """
 
-        if not self._buffereddata2:
+        if len(self._buffereddata2) == 0:
             self._buffereddata2 = np.zeros(data.shape)
 
         self._buffereddata2 = np.concatenate((self._buffereddata2, data))
@@ -704,10 +971,13 @@ class CWL(RtFilter):
             To more easily handle the delays there (and select appropriate data)
             
         """
-        if not self._buffereddata:
+        
+        # ipdb.set_trace()
+        
+        if len(self._buffereddata) == 0:
             self._buffereddata = np.zeros(data.shape)
         while self._buffereddata.shape[0] < nsamples+data.shape[0]:
-            self._buffereddata = np.zeros(data.shape)
+            self._buffereddata = np.concatenate((np.zeros(data.shape), self._buffereddata))
         
         self._buffereddata = np.concatenate((self._buffereddata, data))
         
