@@ -106,6 +106,10 @@ venv.bak/
 .ipynb_checkpoints
 .mat
 *.mat
+.png
+*.png
+.jpg
+*.jpg
 *.pyc
 *.pkl
 .bak
