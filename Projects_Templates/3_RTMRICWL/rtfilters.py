@@ -409,6 +409,7 @@ def estimate_it(X, y, Yprev, prev_betas):
     """ The function that ACTUALLY estimates beta's -- the rest is all upkeep & maintenance
     """
     
+    b=time.time()
     # ipdb.set_trace()
     inv = np.linalg.pinv(np.dot(X.T, X))
     
@@ -422,8 +423,12 @@ def estimate_it(X, y, Yprev, prev_betas):
     
     fname = 'glm' + now_matfile()
     
-    scipy.io.savemat(fname, {'X':X, 'betas':betas, 'prev_betas':prev_betas, 'diff1':diff1, 'diff2':diff2, 'y':y, 'Yprev':Yprev})
+    e=time.time()
+
+    scipy.io.savemat(fname, {'X':X, 'betas':betas, 'prev_betas':prev_betas, 'diff1':diff1, 'diff2':diff2, 'y':y, 'Yprev':Yprev,'calculation-time':e-b})
     #qdiff.put(diff)
+
+
 
     return betas, diff1, diff2
 
@@ -683,7 +688,7 @@ class CWL(RtFilter):
                     
                     # 'init' a new one, too. associate our most current beta's to that
                     self._check_switch_betas()  # figure out / upkeep on beta estimations - check the queue. -- kalman should be implemented here?
-                    tli['b'] = self.betas[-1]   # assign the latest one(s) -- or the Kalman estimated ones
+                    tli['b'] = self.currentbetas   # assign the latest one(s) -- or the Kalman estimated ones
 
                     tli['s'] += nwin-1
                     cur_s = tli['s']
@@ -896,7 +901,7 @@ class CWL(RtFilter):
         Yprev = tli['Y']
         
 
-        prev_betas = self.betas[-1]
+        prev_betas = tli['b']
 
         # contains 6 regressors; taken with different time delays
         # so the beta's are per cwl-per-delay the fit to y.
@@ -986,8 +991,61 @@ class CWL(RtFilter):
         
     
 
-
     
 
+class SAFERESAMPLE(RtFilter):
+    """ Smartly re-sample to an arbitrary sampling interval
+        The bad thing that can happen in real-time is that resampling a chunk of 200 samples with a fs of 1000
+        into a chunk of 1000/128 = 7 (integer, round down) samples and then forget about the remaining
+        104 samples.
         
+        To counter that, we just remember what was 'left out' the previous data chunk and prepend to the current
+        one.
+    
+        This functionality is also explained in the wyrm package - but here, we don't wish (yet) to utilize wyrms
+        data 'frame' objects to deal with data - just simple numpy matrices.
+    """
+    
+    
+    def __init__(self):
+        
+        self.gotfirstdata=False
+        
+
+    
+    
+    def handle(self, data):
+        
+        
+        if not self.gotfirstdata:
+            self.gotfirstdata=True
+            
+        
+        
+        
+        pass
+    
+    
+    
+    
+    
+
+class CWLKALMAN(RtFilter):
+    """ The Kalman-based implementation of the real-time CWL artifact correction as discussed with Nathan and outlined
+        in the paper Giorgio Bonmassar (NI 16; 1127-1141; 2002).
+        
+        - implements time-shift as outlined in the CWL class
+        - implements the Kalman way - i.e., re-estimate for EACH SAMPLE and each channel
+    """
+        
+        
+        
+    def __init__(self):
+        pass
+    
+    
+    def handle(self):
+        pass
+    
+    
     
