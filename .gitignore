@@ -1,4 +1,9 @@
 # Distribution / packaging
+
+.zip
+*.zip
+.meta
+*.meta
 .Python
 build/
 develop-eggs/
