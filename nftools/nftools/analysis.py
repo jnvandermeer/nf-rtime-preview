@@ -126,8 +126,12 @@ def convert_alld_allm_to_mne(alld, allm, ch_names,s_freq):
         if isinstance(mvalue,str):
             if mvalue == 'boundary':
                 pass
-            else:
+            elif mvalue == 'Sync Off':
+                mvalue = 255
+            elif mvalue[0] == 'S':
                 mvalue = int(mvalue[1:])
+            else:
+                pass
         ev_arr.append([sample, 0, mvalue])
     
     
@@ -139,6 +143,7 @@ def convert_alld_allm_to_mne(alld, allm, ch_names,s_freq):
     stim_raw = mne.io.RawArray(stim_data, info)
     raw.add_channels([stim_raw], force_update_info=True)
     
+    import ipdb; ipdb.set_trace()
     # create the marker matrix:
     if len(allm)>0:
         raw.add_events(ev_arr)

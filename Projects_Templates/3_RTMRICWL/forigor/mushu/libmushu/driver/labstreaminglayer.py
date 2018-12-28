@@ -48,39 +48,22 @@ class LSLAmp(Amplifier):
         protocol.
 
         """
-        self.first_data_acquired = False
-        print(kwargs)
         
-        for kwarg, kwval in kwargs.items():
-            if kwarg == 'amp' and kwval == 'BVA':
-                streamargs = ('name', 'BrainVision RDA')
-                streammarkerargs = ('name', 'BrainVision RDA Markers')
-                
-                print(streamargs)
-                print(streammarkerargs)
-                
-            else:
-                streamargs = ('type', 'EEG')
-                streammarkerargs = ('type', 'Markers')
-                
-                
-            
         self.markers_list=[]
         # lsl defined
         #self.max_samples = 4096
         self.max_samples = 1024
         # open EEG stream
         logger.debug('Opening EEG stream...')
-        streams = pylsl.resolve_stream(*streamargs)
+        streams = pylsl.resolve_stream('type', 'EEG')
         if len(streams) > 1:
             logger.warning('Number of EEG streams is > 0, picking the first one.')
         self.lsl_inlet = pylsl.StreamInlet(streams[0], max_buflen=30)
-        self.lsl_info = self.lsl_inlet.info()
         # open marker stream
         logger.debug('Opening Marker stream...')
         # TODO: should add a timeout here in case there is no marker
         # stream
-        streams = pylsl.resolve_stream(*streammarkerargs)
+        streams = pylsl.resolve_stream('type', 'Markers')
         if len(streams) > 1:
             logger.warning('Number of Marker streams is > 0, picking the first one.')
         self.lsl_marker_inlet = pylsl.StreamInlet(streams[0], max_buflen=30)
@@ -114,8 +97,6 @@ class LSLAmp(Amplifier):
         logger.debug('Opening lsl streams.')
         self.lsl_inlet.open_stream()
         self.lsl_marker_inlet.open_stream()
-        time.sleep(0.01)
-        d, m = self.get_data()
 
     def stop(self):
         """Close the lsl inlets.
@@ -134,20 +115,6 @@ class LSLAmp(Amplifier):
         first sample of that block.
 
         """
-        
-        if self.first_data_acquired is False:
-            self.first_data_acquired = True
-            # obtain channel names here>
-            chs=[]
-            ch = self.lsl_info.desc().child("channels").child("channel")
-            for k in range(self.lsl_info.channel_count()):
-                # print("  " + ch.child_value("label"))
-                chs.append(ch.child_value("label"))
-                ch = ch.next_sibling()
-                
-            self.channels = chs
-        
-        # self.do_time_correction=False
         if self.do_time_correction:
             # print('doing time correction')
             tc_m = self.lsl_marker_inlet.time_correction()
@@ -156,110 +123,57 @@ class LSLAmp(Amplifier):
             tc_m = 0.0
             tc_s = 0.0
 
-
         markers, m_timestamps = self.lsl_marker_inlet.pull_chunk(timeout=0.0, max_samples=self.max_samples)
-        samples, timestamps = self.lsl_inlet.pull_chunk(timeout=0.0, max_samples=self.max_samples)
-
-        #if len(timestamps) < 300:
-        #    ipdb.set_trace()
-
         # flatten the output of the lsl markers, which has the form
         # [[m1], [m2]], and convert to string
-        # markers = [str(i) for sublist in markers for i in sublist]
-
+        markers = [str(i) for sublist in markers for i in sublist]
         
-
-        
-        #if len(markers)>0:
-        #    for itemi, item in enumerate(markers):
-        #        self.markers_list.append([markers[itemi], m_timestamps[itemi]])
+        if len(markers)>0:
+            for itemi, item in enumerate(markers):
+                self.markers_list.append([markers[itemi], m_timestamps[itemi]])
 
         # block until we actually have data
         #samples, timestamps = self.lsl_inlet.pull_chunk(timeout=pylsl.FOREVER, max_samples=self.max_samples)
+        samples, timestamps = self.lsl_inlet.pull_chunk(timeout=0.0, max_samples=self.max_samples)
         samples = np.array(samples).reshape(-1, self.n_channels)
         
-        for mname, mts in zip(markers, m_timestamps):
-            if type(mname) is list:
-                self.markers_list.append((mname[0], mts))
-            else:
-                self.markers_list.append((mname, mts))
-        # ipdb.set_trace()
         
         #if len(m_timestamps) > 0 and len(timestamps) > 0:
         #    ipdb.set_trace()
 
 
 
-        #        if len(timestamps) > 0:
-        #            markers=[]
-        #            m_timestamps=[]
-        #            topop=[]
-        #            for mi, item in enumerate(self.markers_list):
-        #                mtype=item[0]
-        #                mts=item[1]
-        #                if mts in timestamps:
-        #                    markers.append(mtype)
-        #                    m_timestamps.append(mts)
-        #                    topop.append(mi)
-        #    
-        #            # remove em if found..
-        #            if len(topop) > 0:
-        #                for popi in topop:
-        #                    self.markers_list.pop(popi)
-        #
-        #        else:
-        #            markers=[]
-        #            m_timestamps=[]
+        if len(timestamps) > 0:
+            markers=[]
+            m_timestamps=[]
+            topop=[]
+            for mi, item in enumerate(self.markers_list):
+                mtype=item[0]
+                mts=item[1]
+                if mts in timestamps:
+                    markers.append(mtype)
+                    m_timestamps.append(mts)
+                    topop.append(mi)
+    
+            # remove em if found..
+            if len(topop) > 0:
+                for popi in topop:
+                    self.markers_list.pop(popi)
+
+        else:
+            markers=[]
+            m_timestamps=[]
 
         #if len(timestamps) > 0:
             # see if we can find markers that match the data:
         #    for ts in se
 
-        # fancy code to ONLY return the data that was requested:
-        m_timestamps_toreturn=[]
-        markers_toreturn=[]
-        topop=[]
-        if len(timestamps) > 0 and len(self.markers_list) > 0:
-            
-            bts, *_, ets = timestamps
-            
-            bts += tc_s
-            ets += tc_s
-            #if len(self.markers_list) > 0:
-            #    ipdb.set_trace()
         
-            for i, (mname, mts) in enumerate(self.markers_list):
-                
-                mts += tc_m
-                
-                if mts >= bts and mts <= ets:
+        if len(timestamps) > 0:
 
-                    m_timestamps_toreturn.append((mts - bts) * 1000)
-                    markers_toreturn.append(mname)
-                    
-                    
-                    topop.append(i)
-                
-                else:
-                    if mts > ets:
-                        print('marker too fast! %f, %f, %f' % (bts, mts, ets))
-                    elif mts < bts:
-                        print('marker too slow! %f, %f, %f' % (bts, mts, ets))
-                        m_timestamps_toreturn.append((0) * 1000)
-                        markers_toreturn.append(mname)
-                        print('resued otherwise lost marker')
-                        topop.append(i)
-                    else:
-                        print('i don''t know!! %f, %f, %f' % (bts, mts, ets))
-                        topop.append(i)
-                    # print(mname)
-        
-        # sort n reverse it, so popping indices don't break things:
-        topop.sort()
-        topop.reverse()
-        
-        for ipop in topop:
-            self.markers_list.pop(ipop)
+            t0 = timestamps[0] + tc_s
+            m_timestamps = [(i + tc_m - t0) * 1000 for i in m_timestamps]
+
         # so we need to do something here. Put the marker information into a lst
         # then figure out what our timestamps are
         # then if timestamp of DATA -- matches timestamp of MARKER
@@ -271,9 +185,7 @@ class LSLAmp(Amplifier):
         #if len(timestamps) != len(m_timestamps):
         #    ipdb.set_trace()
 
-        #if len(markers_toreturn)>0:
-        #    ipdb.set_trace()
-        return samples, list(zip(m_timestamps_toreturn, markers_toreturn))
+        return samples, list(zip(m_timestamps, markers))
 
     def get_channels(self):
         """Get channel names.
