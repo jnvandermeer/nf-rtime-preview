@@ -50,7 +50,9 @@ class LSLAmp(Amplifier):
         """
         self.first_data_acquired = False
         print(kwargs)
-        
+    
+        streamargs = ('type', 'EEG')
+        streammarkerargs = ('type', 'Markers')
         for kwarg, kwval in kwargs.items():
             if kwarg == 'amp' and kwval == 'BVA':
                 streamargs = ('name', 'BrainVision RDA')
@@ -59,19 +61,23 @@ class LSLAmp(Amplifier):
                 print(streamargs)
                 print(streammarkerargs)
                 
-            else:
-                streamargs = ('type', 'EEG')
-                streammarkerargs = ('type', 'Markers')
+
                 
                 
             
+        # ipdb.set_trace()
         self.markers_list=[]
         # lsl defined
         #self.max_samples = 4096
         self.max_samples = 1024
         # open EEG stream
         logger.debug('Opening EEG stream...')
-        streams = pylsl.resolve_stream(*streamargs)
+        streams = pylsl.resolve_byprop(streamargs[0],streamargs[1],timeout=1.0)
+        
+        if len(streams) == 0:
+            # try a signal?
+            streams=pylsl.resolve_byprop('type','signal',timeout=1.0)
+        
         if len(streams) > 1:
             logger.warning('Number of EEG streams is > 0, picking the first one.')
         self.lsl_inlet = pylsl.StreamInlet(streams[0], max_buflen=30)
@@ -80,7 +86,7 @@ class LSLAmp(Amplifier):
         logger.debug('Opening Marker stream...')
         # TODO: should add a timeout here in case there is no marker
         # stream
-        streams = pylsl.resolve_stream(*streammarkerargs)
+        streams = pylsl.resolve_byprop(streammarkerargs[0],streammarkerargs[1], timeout=1.0)
         if len(streams) > 1:
             logger.warning('Number of Marker streams is > 0, picking the first one.')
         self.lsl_marker_inlet = pylsl.StreamInlet(streams[0], max_buflen=30)
